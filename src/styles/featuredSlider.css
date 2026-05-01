@@ -1,86 +1,112 @@
 /* ── Featured Slider ─────────────────────────────────────── */
 .slider {
-  padding: 6rem 0 12rem;
+  /* Üst ve alt boşlukları devleştirdik */
+  padding: 10rem 0 15rem; 
   background-color: transparent;
   overflow: hidden;
 }
 
 .slider__heading {
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 3vw, 2rem);
-  color: var(--color-red-dark);
-  letter-spacing: 0.3em;
+  /* Font artık Metal Mania değil, Times New Roman (globalden geliyor) */
+  font-size: clamp(3rem, 6vw, 5rem); 
+  color: var(--color-red);
+  letter-spacing: 0.2em;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 6rem;
+  text-transform: uppercase;
+  text-shadow: 2px 4px 10px rgba(0,0,0,0.3);
 }
 
 .slider__window {
   width: 100%;
   overflow: visible;
-  padding: 0 2rem;
+  padding: 0 4rem;
 }
 
 .slider__track {
   display: flex;
-  gap: 1.5rem;
+  /* Kartlar arası boşluğu devleştirdik */
+  gap: 4rem; 
   width: max-content;
-  transition: transform 0.12s ease-out;
+  /* Kaydırma hissiyatı için yumuşak geçiş */
+  transition: transform 0.1s ease-out; 
+  will-change: transform;
 }
 
 .slider__card {
-  width: 280px;
+  /* Kart genişliğini 280px'den 650px'e çıkardık */
+  width: 650px; 
   flex-shrink: 0;
-  background-color: rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(139, 90, 60, 0.3);
-  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border);
+  border-radius: 0; /* Keskin köşeler daha ağırbaşlı durur */
   overflow: hidden;
-  transition: border-color 0.3s ease, transform 0.3s ease;
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .slider__card:hover {
-  border-color: var(--color-red-dark);
-  transform: translateY(-4px);
+  border-color: var(--color-red);
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
 }
 
 .slider__card-img-wrap {
   width: 100%;
-  height: 200px;
+  /* Yüksekliği 200px'den 450px'e çıkardık */
+  height: 450px; 
   overflow: hidden;
+  background: #000;
 }
 
 .slider__card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.85;
-  transition: opacity 0.3s ease, transform 0.4s ease;
+  opacity: 0.75;
+  transition: all 0.5s ease;
 }
 
 .slider__card:hover .slider__card-img {
   opacity: 1;
-  transform: scale(1.04);
+  transform: scale(1.1);
 }
 
 .slider__card-body {
-  padding: 1rem 1.2rem;
+  /* İç boşlukları büyüttük */
+  padding: 2.5rem 3rem; 
+  background: rgba(10, 10, 10, 0.9);
+  flex-grow: 1;
 }
 
 .slider__card-title {
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  color: var(--color-red);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.4rem;
+  /* Başlıkları devleştirdik */
+  font-size: 2.2rem; 
+  color: #fff;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  font-weight: normal;
 }
 
 .slider__card-desc {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  color: var(--page-text);
-  opacity: 0.6;
-  line-height: 1.5;
+  /* Açıklamalar artık okunabilir boyutta */
+  font-size: 1.2rem; 
+  color: #ccc;
+  opacity: 0.9;
+  line-height: 1.6;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3; /* 2 satırdan 3 satıra çıkardık */
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ── Responsive Düzenlemeler ── */
+@media (max-width: 768px) {
+  .slider__card {
+    width: 85vw; /* Mobilde ekranın çoğunu kaplasın */
+  }
+  .slider__card-img-wrap {
+    height: 300px;
+  }
 }

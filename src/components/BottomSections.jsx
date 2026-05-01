@@ -9,7 +9,8 @@ function BottomSections() {
   return (
     <footer className="bottom">
 
-      <section className="bottom__section">
+      {/* VİZYONUMUZ BÖLÜMÜ - id eklendi */}
+      <section id="vizyonumuz" className="bottom__section">
         <h2 className="bottom__title">Our Vision</h2>
         <p className="bottom__text">
           Art as a lens through which the unseen becomes visible.
@@ -18,7 +19,8 @@ function BottomSections() {
         </p>
       </section>
 
-      <section className="bottom__section">
+      {/* HAKKIMIZDA BÖLÜMÜ - id eklendi */}
+      <section id="hakkimizda" className="bottom__section">
         <h2 className="bottom__title">About</h2>
         <p className="bottom__text">
           Mensrea is a self-taught illustrator and visual artist.
@@ -28,7 +30,8 @@ function BottomSections() {
         </p>
       </section>
 
-      <section id="contact" className="bottom__section">
+      {/* İLETİŞİM BÖLÜMÜ - id "iletisim" olarak güncellendi */}
+      <section id="iletisim" className="bottom__section">
         <h2 className="bottom__title">Contact</h2>
         <form className="bottom__form" onSubmit={handleSubmit}>
           <input className="bottom__input" type="email" placeholder="your email" required />
@@ -44,10 +47,14 @@ function BottomSections() {
           {Array.from({ length: 15 }).map((_, i) => (
             <div key={i} className="bottom__bar-line" />
           ))}
-          <span className="bottom__spotify">♫</span>
         </a>
-        <img src="/image_site/cat_pixelart.gif" alt="cat" className="bottom__cat" />
-        <span className="bottom__copy">© Mensrea</span>
+        <img
+          src="/image_site/cat_pixelart.gif"
+          alt="cat"
+          className="bottom__cat"
+          loading="lazy"
+        />
+        <span className="bottom__copy">© MCO</span>
       </div>
 
     </footer>

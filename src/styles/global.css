@@ -1,5 +1,5 @@
 /* ── Fonts ───────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap');
+/* Metal Mania fontunu tamamen kaldırdık. Times New Roman sistem fontu olduğu için import gerektirmez. */
 
 /* ── Design Tokens ───────────────────────────────────────── */
 :root {
@@ -8,11 +8,24 @@
   --color-red-muted: #5a1a1a;
   --color-border:    rgba(139, 90, 60, 0.25);
   --color-surface:   rgba(0, 0, 0, 0.06);
-  --font-display:    'Metal Mania', cursive;
+  
+  /* Tüm siteyi yönetecek ana font: Times New Roman ve yedekleri */
+  --font-display:    'Times New Roman', Times, serif;
 
-  /* Scroll-driven — updated by useScrollColor hook */
-  --page-bg:   rgb(240, 235, 224);
-  --page-text: rgb(50, 28, 18);
+  /* Kaydırma ile karıştırılacak renkler */
+  --bg-start: rgb(249, 241, 220);  
+  --bg-end:   rgb(1, 2, 17);     
+  
+  --text-start: rgb(11, 6, 4);   
+  --text-end:   rgb(249, 186, 76); 
+
+  --scroll-ratio: 0;
+
+  /* ── DAHA DA BÜYÜTÜLMÜŞ TOKENS ── */
+  /* Maksimum genişliği 1800px'e çekiyoruz, neredeyse tam ekran yayılımı */
+  --container-width: 1800px; 
+  /* Bölümler arası boşluğu devleştiriyoruz */
+  --section-spacing: 150px; 
 }
 
 /* ── Reset ───────────────────────────────────────────────── */
@@ -22,26 +35,59 @@
   box-sizing: border-box;
 }
 
+/* Input, buton ve textarea'ların inatçı sistem fontlarını ezmek için */
+input, button, textarea, select {
+  font-family: inherit;
+}
+
 html {
-  font-size: 16px;
+  /* RADİKAL BÜYÜTME: 16px'den 26px'e çıkış. 
+     Bu, başlangıçtaki haline göre yaklaşık %62.5 daha büyük bir site demek. */
+  font-size: 26px; 
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--page-bg);
-  color: var(--page-text);
+  background-color: color-mix(in srgb, var(--bg-start), var(--bg-end) calc(var(--scroll-ratio) * 100%));
+  color: color-mix(in srgb, var(--text-start), var(--text-end) calc(var(--scroll-ratio) * 100%));
+  
   font-family: var(--font-display);
-  line-height: 1.5;
+  /* Devasa yazılarda satırların birbirine binmemesi için oranı koruyoruz */
+  line-height: 1.5; 
   cursor: url('/image_site/bat_pixelart.gif'), auto;
+  
+  transition: background-color 0.1s linear, color 0.1s linear;
+  min-height: 100vh;
+
+  /* Yazıların pürüzsüz, keskin ve daha şık görünmesi için: */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Layout Helpers ── */
+.container {
+  width: 94%; /* Kenar boşluklarını daraltıp içeriği yayıyoruz */
+  max-width: var(--container-width);
+  margin: 0 auto;
 }
 
 a {
   text-decoration: none;
   color: inherit;
+  transition: all 0.3s ease;
 }
 
 img {
   width: 100%;
   height: auto;
   display: block;
+  /* Büyük resimlerde bozulma olmaması için rendering kalitesini zorlayalım */
+  image-rendering: high-quality;
+  object-fit: cover;
 }
+
+/* Başlık Standartları - Gerçekten devasa ve zarif */
+h1 { font-size: 5rem; letter-spacing: -2px; line-height: 1.1; font-weight: normal; }
+h2 { font-size: 4rem; letter-spacing: -1px; font-weight: normal; }
+h3 { font-size: 2.5rem; font-weight: normal; }
+p { font-size: 1.3rem; margin-bottom: 1.5rem; font-weight: normal; }

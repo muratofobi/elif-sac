@@ -1,0 +1,232 @@
+/* ── Project Modal & Admin Upload Styles ────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.98); /* Daha derin odaklanma */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(15px);
+}
+
+.modal-content {
+  background: #fdf6e3;
+  width: 95vw;
+  height: 92vh;
+  max-width: 1800px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 50px 150px rgba(0, 0, 0, 0.9);
+}
+
+/* ── SOL: Galeri ve Navigasyon ──────────────────────────── */
+.modal-image-side {
+  flex: 1;
+  background: #000;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.dev-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Dev resimleri bozmadan sığdırır */
+  transition: opacity 0.4s ease;
+}
+
+/* Navigasyon Okları */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  font-size: 5rem;
+  padding: 30px 20px;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(139, 32, 32, 0.8); /* Senin kırmızı tonun */
+  color: #fff;
+}
+
+.nav-btn.prev { left: 0; border-radius: 0 8px 8px 0; }
+.nav-btn.next { right: 0; border-radius: 8px 0 0 8px; }
+
+/* Galeri Sayacı (1 / 5 gibi) */
+.gallery-counter {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 8px 25px;
+  border-radius: 30px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  backdrop-filter: blur(5px);
+}
+
+/* ── SAĞ: Bilgi Paneli ──────────────────────────────────── */
+.modal-info-side {
+  width: 550px;
+  min-width: 500px;
+  background: #fdf6e3;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.modal-info-side h2 {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: #1a0b04;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.project-date {
+  font-family: var(--font-display);
+  color: #8b2020;
+  font-size: 1.8rem;
+  margin-bottom: 40px;
+  display: block;
+}
+
+.info-description p {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1.6;
+  color: #222;
+}
+
+.close-btn {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  background: none;
+  border: none;
+  font-size: 4.5rem;
+  cursor: pointer;
+  color: #1a0b04;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.close-btn:hover {
+  transform: rotate(90deg);
+  color: #8b2020;
+}
+
+/* ── ADMIN: Medya Yükleme Alanı Stilleri ───────────────── */
+
+.admin__upload-zone {
+  border: 3px dashed var(--color-border);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 60px 20px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.admin__upload-zone:hover {
+  border-color: var(--color-red);
+  background: rgba(139, 32, 32, 0.05);
+}
+
+.admin__upload-label {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.admin__file-hidden {
+  display: none;
+}
+
+/* Resim Önizleme Izgarası */
+.admin__preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.admin__preview-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.admin__preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin__preview-item button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #cc0000;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .modal-content {
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  .modal-info-side {
+    width: 100%;
+    min-width: 100%;
+    padding: 40px;
+  }
+  
+  .modal-image-side {
+    height: 60vh;
+  }
+
+  .nav-btn {
+    font-size: 3rem;
+  }
+}

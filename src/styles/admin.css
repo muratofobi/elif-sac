@@ -34,7 +34,7 @@
   margin-left: auto;
   font-family: var(--font-display);
   font-size: 0.7rem;
-  color: #444;
+  color: #525252;
   cursor: pointer;
   letter-spacing: 0.1em;
   background: none;
@@ -68,7 +68,7 @@
   width: 300px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  color: var(--color-text);
+  color: #ffffff; /* Giriş şifresi beyaz */
   font-family: var(--font-display);
   font-size: 0.85rem;
   padding: 0.75rem 1rem;
@@ -95,14 +95,7 @@
 
 .admin__login-btn:hover {
   background-color: var(--color-red-dark);
-  color: #fff;
-}
-
-.admin__login-error {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  color: var(--color-red);
-  letter-spacing: 0.1em;
+  color: #eecece;
 }
 
 /* ── Body ────────────────────────────────────────────────── */
@@ -137,7 +130,7 @@
   margin-bottom: 1.2rem;
 }
 
-/* ── Form Fields ─────────────────────────────────────────── */
+/* ── Form Fields (GÜNCELLENDİ) ───────────────────────────── */
 .admin__field {
   display: flex;
   flex-direction: column;
@@ -148,7 +141,7 @@
 .admin__label {
   font-family: var(--font-display);
   font-size: 0.65rem;
-  color: #555;
+  color: #d1d1d1; /* Etiketler daha açık gri */
   letter-spacing: 0.15em;
 }
 
@@ -156,7 +149,7 @@
 .admin__textarea {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  color: var(--color-text);
+  color: #f0f0f0; /* Yazdığın yazılar beyaz/açık gri */
   font-family: var(--font-display);
   font-size: 0.8rem;
   padding: 0.6rem 0.8rem;
@@ -168,6 +161,12 @@
 .admin__input:focus,
 .admin__textarea:focus {
   border-color: var(--color-red-dark);
+  color: #ffffff; /* Focus olunca tam beyaz */
+}
+
+.admin__input::placeholder,
+.admin__textarea::placeholder {
+  color: #555; /* İpucu yazıları daha sönük */
 }
 
 .admin__textarea {
@@ -233,7 +232,23 @@
   color: #fff;
 }
 
-/* ── Existing Projects List ──────────────────────────────── */
+/* Update butonunun küçük versiyonu olarak Cancel butonu */
+.admin__publish--cancel {
+  background-color: transparent;
+  border: 1px solid var(--color-red-muted);
+  font-size: 0.7rem; /* Daha küçük font */
+  padding: 0.4rem;   /* Daha dar alan */
+  margin-top: 0.8rem;
+  opacity: 0.7;
+}
+
+.admin__publish--cancel:hover {
+  background-color: var(--color-red-muted);
+  opacity: 1;
+  color: #fff;
+}
+
+/* ── Existing Projects List (GÜNCELLENDİ) ────────────────── */
 .admin__list {
   display: flex;
   flex-direction: column;
@@ -248,11 +263,11 @@
   border-bottom: 1px solid var(--color-border);
   font-family: var(--font-display);
   font-size: 0.8rem;
-  color: #666;
+  color: #cccccc; /* Liste metinleri açık gri */
 }
 
 .admin__list-item-title {
-  color: var(--color-text-muted);
+  color: #e0e0e0; /* Proje başlıkları daha parlak */
   letter-spacing: 0.05em;
 }
 
@@ -271,15 +286,15 @@
   transition: color 0.3s;
 }
 
-.admin__list-btn.edit   { color: #555; }
+.admin__list-btn.edit   { color: #777; }
 .admin__list-btn.delete { color: var(--color-red-muted); }
-.admin__list-btn.edit:hover   { color: var(--color-text-muted); }
+.admin__list-btn.edit:hover   { color: #fff; }
 .admin__list-btn.delete:hover { color: var(--color-red); }
 
 .admin__empty {
   font-family: var(--font-display);
   font-size: 0.75rem;
-  color: #333;
+  color: #444;
   letter-spacing: 0.1em;
   text-align: center;
   padding: 2rem 0;
