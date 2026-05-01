@@ -1,0 +1,150 @@
+/* ── Bottom Sections ─────────────────────────────────────── */
+.bottom {
+  background-color: transparent;
+}
+
+.bottom__section {
+  padding: 10rem 2rem;
+  border-bottom: 1px solid rgba(139, 90, 60, 0.15);
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.bottom__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--color-red);
+  letter-spacing: 0.3em;
+  margin-bottom: 2.5rem;
+  text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+}
+
+.bottom__text {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+  color: var(--page-text);
+  line-height: 2.2;
+  letter-spacing: 0.05em;
+}
+
+/* ── Contact Form ────────────────────────────────────────── */
+.bottom__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.bottom__input,
+.bottom__textarea {
+  width: 100%;
+  max-width: 500px;
+  background-color: rgba(0,0,0,0.08);
+  border: 1px solid rgba(139, 90, 60, 0.3);
+  color: var(--page-text);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.bottom__input:focus,
+.bottom__textarea:focus {
+  border-color: var(--color-red-dark);
+}
+
+.bottom__textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.bottom__btn {
+  margin-top: 0.4rem;
+  padding: 0.7rem 2rem;
+  background-color: var(--color-red-muted);
+  border: 1px solid var(--color-red-dark);
+  color: var(--color-red);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bottom__btn:hover {
+  background-color: var(--color-red-dark);
+  color: #fff;
+}
+
+/* ── Footer Bar ──────────────────────────────────────────── */
+.bottom__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #050505;
+  border-top: 1px solid #1a0000;
+}
+
+/* Spotify link wraps the entire music bar */
+.bottom__music {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 24px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.bottom__bar-line {
+  width: 3px;
+  border-radius: 2px;
+  animation: musicBar 2s ease-in-out infinite;
+}
+
+.bottom__bar-line:nth-child(odd)  { background-color: var(--color-red-dark); }
+.bottom__bar-line:nth-child(even) { background-color: var(--color-red); }
+.bottom__bar-line:nth-child(1)  { animation-delay: 0.0s; }
+.bottom__bar-line:nth-child(2)  { animation-delay: 0.2s; }
+.bottom__bar-line:nth-child(3)  { animation-delay: 0.4s; }
+.bottom__bar-line:nth-child(4)  { animation-delay: 0.6s; }
+.bottom__bar-line:nth-child(5)  { animation-delay: 0.8s; }
+.bottom__bar-line:nth-child(6)  { animation-delay: 1.0s; }
+.bottom__bar-line:nth-child(7)  { animation-delay: 1.2s; }
+.bottom__bar-line:nth-child(8)  { animation-delay: 1.0s; }
+.bottom__bar-line:nth-child(9)  { animation-delay: 0.8s; }
+.bottom__bar-line:nth-child(10) { animation-delay: 0.6s; }
+.bottom__bar-line:nth-child(11) { animation-delay: 0.4s; }
+.bottom__bar-line:nth-child(12) { animation-delay: 0.2s; }
+.bottom__bar-line:nth-child(13) { animation-delay: 0.4s; }
+.bottom__bar-line:nth-child(14) { animation-delay: 0.6s; }
+.bottom__bar-line:nth-child(15) { animation-delay: 0.8s; }
+
+@keyframes musicBar {
+  0%, 100% { height: 3px; }
+  50%       { height: 20px; }
+}
+
+.bottom__spotify {
+  font-size: 1rem;
+  color: var(--color-red-dark);
+  margin-left: 5px;
+  transition: color 0.3s;
+}
+
+.bottom__music:hover .bottom__spotify { color: var(--color-red); }
+
+.bottom__cat {
+  width: 55px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.bottom__copy {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: #333;
+  letter-spacing: 0.2em;
+}

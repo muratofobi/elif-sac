@@ -1,0 +1,81 @@
+/* ── Hero Section ────────────────────────────────────────── */
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/image_site/mensrea1.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 10rem);
+  color: var(--color-red);
+  text-shadow:
+    2px 0   #8b4a2a,
+   -2px 0   #8b4a2a,
+    0   2px  #8b4a2a,
+    0  -2px  #8b4a2a,
+    2px 8px 12px rgba(139, 50, 20, 0.4);
+  letter-spacing: 0.05em;
+}
+
+.hero__subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  color: var(--color-red-dark);
+  letter-spacing: 0.1em;
+}
+
+/* Instagram button */
+.hero__btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.8rem 2.4rem;
+  border: 1px solid rgba(100, 50, 20, 0.4);
+  color: var(--color-red-dark);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  transition: all 0.4s ease;
+}
+
+.hero__btn:hover {
+  background-color: var(--color-red-muted);
+  color: var(--color-red);
+  border-color: var(--color-red-dark);
+}
+
+/* Projects page link */
+.hero__projects-link {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: rgba(100, 50, 20, 0.6);
+  letter-spacing: 0.2em;
+  transition: color 0.3s;
+}
+
+.hero__projects-link:hover {
+  color: var(--color-red);
+}
