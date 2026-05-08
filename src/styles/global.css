@@ -54,7 +54,6 @@ body {
   font-family: var(--font-display);
   /* Devasa yazılarda satırların birbirine binmemesi için oranı koruyoruz */
   line-height: 1.5; 
-  cursor: url('/image_site/bat_pixelart.gif'), auto;
   
   transition: background-color 0.1s linear, color 0.1s linear;
   min-height: 100vh;
@@ -90,4 +89,148 @@ img {
 h1 { font-size: 5rem; letter-spacing: -2px; line-height: 1.1; font-weight: normal; }
 h2 { font-size: 4rem; letter-spacing: -1px; font-weight: normal; }
 h3 { font-size: 2.5rem; font-weight: normal; }
-p { font-size: 1.3rem; margin-bottom: 1.5rem; font-weight: normal; }
+
+/* ── İÇERİK YAZILARI BÜYÜTÜLDÜ ── */
+p { 
+  font-size: 1.55rem; /* 1.3rem'den 1.55rem'e çıkarıldı (bir tık büyüdü) */
+  margin-bottom: 1.5rem; 
+  font-weight: normal; 
+  line-height: 1.7; /* Yazı büyüdüğü için satır aralığını da biraz açtık ki birbirine girmesin */
+}
+
+/* ── Modern Call-to-Action Butonu ── */
+.btn-modern {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+}
+
+/* Hover durumunda soldan sağa dolan arka plan */
+.btn-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-red-dark);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.btn-modern:hover {
+  color: #fff;
+  border-color: var(--color-red-dark);
+  transform: translateY(-3px); /* Tıklanma hissi için hafifçe yukarı kalkar */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Derinlik katar */
+}
+
+.btn-modern:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Ok ikonunun animasyonu */
+.btn-modern svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.btn-modern:hover svg {
+  transform: translateX(6px); /* Üzerine gelince ok sağa doğru kayar */
+}
+
+/* ── Geri Butonu Balyoz Çözümü (Kesin Sola Kayar) ── */
+a.projects__back.btn-modern.btn-back:hover svg {
+  transform: translateX(-6px) !important;
+}
+
+
+
+/* ───────────────────────────────────────────────────────── */
+/* ── RESPONSIVE (MOBİL VE TABLET) UYARLAMALARI ──────────── */
+/* ───────────────────────────────────────────────────────── */
+
+/* Tabletler ve Küçük Laptoplar İçin (Max 1024px) */
+@media screen and (max-width: 1024px) {
+  html {
+    /* 26px olan kök fontu biraz küçültüyoruz */
+    font-size: 20px; 
+  }
+
+  :root {
+    /* Bölümler arası o devasa 150px boşluğu biraz daraltıyoruz */
+    --section-spacing: 100px; 
+  }
+
+  h1 { font-size: 4rem; }
+  h2 { font-size: 3rem; }
+}
+
+/* Telefonlar İçin (Max 768px) */
+@media screen and (max-width: 768px) {
+  html {
+    /* Telefondaki kök fontu standart boyutlara çekiyoruz */
+    font-size: 16px; 
+  }
+
+  :root {
+    /* Telefonda bölümler arası boşluk çok fazla olmamalı */
+    --section-spacing: 60px; 
+  }
+
+  /* Başlıkları telefon ekranına sığacak şekilde küçültüyoruz */
+  h1 { 
+    font-size: 3.5rem; 
+    line-height: 1.2;
+  }
+  
+  h2 { 
+    font-size: 2.5rem; 
+  }
+  
+  h3 { 
+    font-size: 1.8rem; 
+  }
+
+  /* Hero Content'i (Ana giriş ekranındaki yazıları) ortalayıp sığdırıyoruz */
+  .hero__content {
+    width: 90%;
+    text-align: center;
+  }
+
+  /* Japonca/Japonca alt başlığın telefonda iki satıra düşüp çirkin durmaması için küçültüyoruz */
+  .hero__subtitle {
+    font-size: 1.1rem;
+    padding: 0 10px;
+  }
+}
+
+/* Çok Küçük Telefonlar İçin (Max 480px - Örn: iPhone SE vs.) */
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 3rem;
+  }
+}

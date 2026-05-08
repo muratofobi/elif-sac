@@ -33,18 +33,20 @@ function Home() {
     <main>
       <Hero/>
       <FeaturedSlider />
-      <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-        <Link 
-          to="/projects" 
-          style={{ 
-            fontFamily: 'var(--font-display)', 
-            fontSize: '1.5rem', 
-            color: 'var(--color-red-dark)', 
-            letterSpacing: '0.2em', 
-            transition: 'color 0.3s' 
-          }}
-        >
-          ── See All Projects ──
+      <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+        <Link to="/projects" className="btn-modern">
+          <span>See All Projects</span>
+          <svg 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
         </Link>
       </div>
       <BottomSections />

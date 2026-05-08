@@ -13,7 +13,7 @@
 
 .bottom__title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem); /* BAŞLIK SABİT KALDI */
   color: var(--color-red);
   letter-spacing: 0.3em;
   margin-bottom: 2.5rem;
@@ -22,9 +22,10 @@
 
 .bottom__text {
   font-family: var(--font-display);
-  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+  /* İŞTE SİHİR BURADA: Eski max değer 1.05rem idi, şimdi 1.6rem'e çıktı */
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem); 
   color: var(--page-text);
-  line-height: 2.2;
+  line-height: 1.8; /* Yazı büyüdüğü için satır aralığını biraz toparladık */
   letter-spacing: 0.05em;
 }
 
@@ -32,7 +33,7 @@
 .bottom__form {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -44,8 +45,9 @@
   border: 1px solid rgba(139, 90, 60, 0.3);
   color: var(--page-text);
   font-family: var(--font-display);
-  font-size: 0.85rem;
-  padding: 0.75rem 1rem;
+  /* Mobilde otomatik zoom'u engellemek ve uyum sağlamak için 1rem yapıldı */
+  font-size: 1rem; 
+  padding: 1rem 1.2rem;
   outline: none;
   transition: border-color 0.3s ease;
 }
@@ -56,18 +58,18 @@
 }
 
 .bottom__textarea {
-  height: 120px;
+  height: 140px;
   resize: vertical;
 }
 
 .bottom__btn {
-  margin-top: 0.4rem;
-  padding: 0.7rem 2rem;
+  margin-top: 0.5rem;
+  padding: 0.8rem 2.5rem;
   background-color: var(--color-red-muted);
   border: 1px solid var(--color-red-dark);
   color: var(--color-red);
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: 1.1rem; /* Buton yazısı da estetik olarak büyütüldü */
   letter-spacing: 0.15em;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -88,7 +90,6 @@
   border-top: 1px solid #1a0000;
 }
 
-/* Spotify link wraps the entire music bar */
 .bottom__music {
   display: flex;
   align-items: flex-end;
@@ -147,4 +148,22 @@
   font-size: 0.7rem;
   color: #333;
   letter-spacing: 0.2em;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* ── RESPONSIVE (MOBİL VE TABLET) UYARLAMALARI ──────────── */
+/* ───────────────────────────────────────────────────────── */
+
+@media screen and (max-width: 768px) {
+  .bottom__section {
+    padding: 6rem 1.5rem; /* Mobilde o devasa 10rem boşlukları biraz kıstık */
+  }
+  
+  .bottom__text {
+    font-size: 1.2rem; /* Mobilde okuması rahat ama çok da yer kaplamayan boyut */
+  }
+  
+  .bottom__bar {
+    padding: 1rem;
+  }
 }

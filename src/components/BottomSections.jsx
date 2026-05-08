@@ -37,7 +37,13 @@ function BottomSections() {
           <input className="bottom__input" type="email" placeholder="your email" required />
           <input className="bottom__input" type="text" placeholder="subject" required />
           <textarea className="bottom__textarea" placeholder="your message..." required />
-          <button className="bottom__btn" type="submit">Send →</button>
+          <button className="bottom__btn btn-modern" type="submit">
+            <span>Send</span>
+            <svg viewBox="0 0 24 24">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </form>
       </section>
 

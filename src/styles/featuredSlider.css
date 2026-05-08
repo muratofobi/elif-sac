@@ -1,18 +1,22 @@
 /* ── Featured Slider ─────────────────────────────────────── */
 .slider {
-  /* Üst ve alt boşlukları devleştirdik */
   padding: 10rem 0 15rem; 
   background-color: transparent;
   overflow: hidden;
 }
 
 .slider__heading {
-  /* Font artık Metal Mania değil, Times New Roman (globalden geliyor) */
-  font-size: clamp(3rem, 6vw, 5rem); 
+  /* Boyutu hafif küçültüldü (eski hali: 3rem - 5rem arasıydı) */
+  font-size: clamp(2.5rem, 5vw, 4.2rem); 
   color: var(--color-red);
   letter-spacing: 0.2em;
   text-align: center;
-  margin-bottom: 6rem;
+  
+  /* Ortalamayı garantiye alıp, sağdan/soldan nefes alma boşluğu (padding) ekledik */
+  margin: 0 auto 6rem auto; 
+  padding: 0 2rem; 
+  max-width: 1200px; /* Çok büyük ekranlarda yazının sağa sola fazla yayılmasını engeller */
+  
   text-transform: uppercase;
   text-shadow: 2px 4px 10px rgba(0,0,0,0.3);
 }
@@ -23,38 +27,50 @@
   padding: 0 4rem;
 }
 
+/* YENİ PÜRÜZSÜZ KAYDIRMA AYARLARI */
 .slider__track {
   display: flex;
-  /* Kartlar arası boşluğu devleştirdik */
   gap: 4rem; 
-  width: max-content;
-  /* Kaydırma hissiyatı için yumuşak geçiş */
-  transition: transform 0.1s ease-out; 
-  will-change: transform;
+  width: 100%;
+  overflow-x: auto; 
+  /* KASMA YAPAN BÜTÜN KISITLAMALAR KALDIRILDI */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+
+.slider__track::-webkit-scrollbar {
+  display: none; 
+}
+
+.slider__track.dragging {
+  cursor: grabbing; 
+}
+
+.slider__track.dragging .slider__card {
+  pointer-events: none; 
 }
 
 .slider__card {
-  /* Kart genişliğini 280px'den 650px'e çıkardık */
   width: 650px; 
   flex-shrink: 0;
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--color-border);
-  border-radius: 0; /* Keskin köşeler daha ağırbaşlı durur */
+  border-radius: 0; 
   overflow: hidden;
-  transition: all 0.4s ease;
+  transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease; /* All yerine spesifik özellikler (kasmayı engeller) */
   display: flex;
   flex-direction: column;
+  cursor: grab; 
 }
 
 .slider__card:hover {
   border-color: var(--color-red);
-  transform: translateY(-15px) scale(1.02);
+  transform: translateY(-15px); 
   box-shadow: 0 30px 60px rgba(0,0,0,0.5);
 }
 
 .slider__card-img-wrap {
   width: 100%;
-  /* Yüksekliği 200px'den 450px'e çıkardık */
   height: 450px; 
   overflow: hidden;
   background: #000;
@@ -70,18 +86,16 @@
 
 .slider__card:hover .slider__card-img {
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .slider__card-body {
-  /* İç boşlukları büyüttük */
   padding: 2.5rem 3rem; 
   background: rgba(10, 10, 10, 0.9);
   flex-grow: 1;
 }
 
 .slider__card-title {
-  /* Başlıkları devleştirdik */
   font-size: 2.2rem; 
   color: #fff;
   letter-spacing: 0.05em;
@@ -90,23 +104,64 @@
 }
 
 .slider__card-desc {
-  /* Açıklamalar artık okunabilir boyutta */
   font-size: 1.2rem; 
   color: #ccc;
   opacity: 0.9;
   line-height: 1.6;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* 2 satırdan 3 satıra çıkardık */
+  -webkit-line-clamp: 3; 
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* ── Responsive Düzenlemeler ── */
-@media (max-width: 768px) {
+/* ───────────────────────────────────────────────────────── */
+/* ── RESPONSIVE (MOBİL VE TABLET) UYARLAMALARI ──────────── */
+/* ───────────────────────────────────────────────────────── */
+
+/* Tabletler İçin */
+@media (max-width: 1024px) {
+  .slider {
+    padding: 8rem 0 10rem;
+  }
+  .slider__window {
+    padding: 0 2rem; 
+  }
+  .slider__track {
+    gap: 2rem; 
+  }
   .slider__card {
-    width: 85vw; /* Mobilde ekranın çoğunu kaplasın */
+    width: 60vw; 
   }
   .slider__card-img-wrap {
-    height: 300px;
+    height: 350px;
+  }
+}
+
+/* Telefonlar İçin */
+@media (max-width: 768px) {
+  .slider {
+    padding: 5rem 0 7rem;
+  }
+  .slider__window {
+    padding: 0 1rem;
+  }
+  .slider__track {
+    gap: 1.5rem;
+  }
+  .slider__card {
+    width: 85vw; 
+  }
+  .slider__card-img-wrap {
+    height: 280px; 
+  }
+  .slider__card-body {
+    padding: 1.5rem;
+  }
+  .slider__card-title {
+    font-size: 1.8rem;
+  }
+  .slider__card-desc {
+    font-size: 1.1rem;
+    -webkit-line-clamp: 4; 
   }
 }
