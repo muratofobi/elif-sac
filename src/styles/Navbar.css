@@ -1,135 +1,143 @@
-/* ── Hamburger Menü Butonu ── */
-.hamburger {
-  position: fixed;
-  top: 40px;
-  left: 40px;
-  z-index: 10000;
+/* ───────────────────────────────────────────────────────── */
+/* ── MASAÜSTÜ (SENİN ORİJİNAL YANDAN AÇILAN TASARIMIN) ── */
+/* ───────────────────────────────────────────────────────── */
+
+/* Hamburger Butonu Sabit Konumu */
+.nav-toggle {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 45px;
-  height: 30px;
+  width: 35px;
+  height: 25px;
   background: transparent;
   border: none;
   cursor: pointer;
+  position: fixed;
+  top: 2.5rem;
+  left: 2.5rem; /* PC'de solda durur */
+  z-index: 9999;
 }
 
-.hamburger .bar {
+.nav-toggle .bar {
+  height: 2px;
   width: 100%;
-  height: 3px;
-  background-color: var(--color-red-dark);
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
-  border-radius: 2px;
+  background-color: var(--color-red);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  border-radius: 4px;
 }
 
-.hamburger.active .bar:nth-child(1) {
-  transform: translateY(13.5px) rotate(45deg);
-  background-color: #fff;
-}
+/* Çarpı (X) Animasyonu */
+.nav-toggle.open .bar:nth-child(1) { transform: translateY(11.5px) rotate(45deg); background-color: #fff; }
+.nav-toggle.open .bar:nth-child(2) { opacity: 0; }
+.nav-toggle.open .bar:nth-child(3) { transform: translateY(-11.5px) rotate(-45deg); background-color: #fff; }
 
-.hamburger.active .bar:nth-child(2) {
-  opacity: 0;
-  transform: translateX(-20px);
-}
-
-.hamburger.active .bar:nth-child(3) {
-  transform: translateY(-13.5px) rotate(-45deg);
-  background-color: #fff;
-}
-
-/* ── Soldan Kayarak Gelen Menü ── */
-.sidebar {
+/* Masaüstü Navbar: Soldan sağa açılan panel */
+.navbar {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 500px; /* Navbar'ı 400'den 500'e genişlettik */
+  left: -300px; /* Kapalıyken ekranın sol dışında */
+  width: 300px; /* Panelin genişliği */
   height: 100vh;
-  background-color: #050505;
-  border-right: 1px solid rgba(255,255,255,0.05);
-  z-index: 9999;
-  transform: translateX(-100%);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background-color: #080808;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; 
+  transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 1000;
+  border-right: 1px solid rgba(255,255,255, 0.05);
 }
 
-.sidebar.open {
-  transform: translateX(0);
+.navbar.active {
+  left: 0; /* Açıldığında tam sola yaslanır */
 }
 
-.sidebar__content {
-  width: 100%;
-  padding: 0 4rem; /* Sağdan ve soldan yazıları sıkıştırmaması için derin boşluklar verdik */
-}
-
-.sidebar__links {
-  list-style: none;
+.nav-links {
   display: flex;
   flex-direction: column;
-  gap: 3.5rem; /* Yazılar arasındaki yüksekliği 2rem'den 3.5rem'e çıkardık */
-  text-align: center; /* Yazıları tam ortaya hizalar */
+  gap: 3rem;
+  align-items: center;
 }
 
-.sidebar__links a {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
+.nav-links a {
   color: #ccc;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  letter-spacing: 0.2em; /* Harf aralıklarını biraz daha açarak serbest hissini artırdık */
-  white-space: nowrap; 
-  transition: color 0.3s ease, transform 0.3s ease;
-  display: inline-block;
+  transition: color 0.3s ease;
 }
 
-.sidebar__links a:hover {
+.nav-links a:hover, .nav-links .active-link {
   color: var(--color-red);
-  transform: scale(1.05);
 }
 
-/* ── SİTEYİ İTME (YATAYDA KAYDIRMA) ANİMASYONU ── */
-.app-container {
-  overflow-x: hidden; 
-  background-color: #050505; 
-  min-height: 100vh;
+/* SVG İkon Ayarları */
+.nav-svg-icon {
+  width: 64px;
+  height: 64px;
+  filter: invert(0.8); /* Orijinal siyah ise beyaza/griye çevirir */
+  transition: all 0.3s ease;
 }
 
-.main-content {
-  width: 100%;
-  min-height: 100vh;
-  /* Hem menü açılma yaylanması hem de aşağı kaydırdıkça olan renk değişimi için transition'ı birleştirdik */
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.1s linear;
+.nav-social:hover .nav-svg-icon {
+  filter: invert(0.3) sepia(1) saturate(50) hue-rotate(-50deg); /* Üzerine gelince kırmızımsı bir etki */
+  transform: scale(1.1);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* ── MOBİL VE TABLET (ÜSTTEN İNEN YENİ NESİL TASARIM) ── */
+/* ───────────────────────────────────────────────────────── */
+/* Tabletler ve Küçük Laptoplar İçin (Max 1024px) */
+@media screen and (max-width: 1024px) {
+  .nav-svg-icon {
+    width: 50px;
+    height: 50px;
+  }  
+}
+
+@media screen and (max-width: 768px) {
   
-  /* SABİT RENK YERİNE SİHİRLİ FORMÜLÜ BURAYA GETİRDİK */
-  background-color: color-mix(in srgb, var(--bg-start), var(--bg-end) calc(var(--scroll-ratio) * 100%)); 
-}
-
-/* Menü açıkken site sadece sağa itilir */
-.main-content.pushed {
-  transform: translateX(500px); /* Sidebar genişliği 500px olduğu için siteyi de 500px itiyoruz */
-  box-shadow: -15px 0 40px rgba(0,0,0,0.8); 
-  pointer-events: auto;
-  cursor: pointer; 
-}
-
-/* Menü açıkken sitenin içindeki tıklamaları dondur */
-.main-content.pushed * {
-  pointer-events: none;
-}
-
-/* Mobil cihazlar için uyarlama */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100vw; 
+  /* Butonu mobilde sağ üste veya sana uygun olan yere alıyoruz */
+  .nav-toggle {
+    top: 1.5rem;
+    left: auto;
+    right: 1.5rem; /* Mobilde sağda durması UX açısından daha iyidir */
+    width: 30px;
+    height: 20px;
   }
-  .sidebar__content {
-    padding: 0 2rem; /* Mobilde yan boşlukları biraz kısıyoruz */
+
+  .nav-toggle.open .bar:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+  .nav-toggle.open .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+  /* Mobilde Soldan değil, Üstten inecek şekilde değiştiriyoruz */
+  .navbar {
+    left: 0; /* Artık solda sabit */
+    top: -100vh; /* Ekranın yukarısına saklanıyor */
+    width: 100%; /* Tam ekran genişlik */
+    height: 100vh; /* Tam ekran yükseklik */
+    background-color: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(15px);
+    border-right: none;
+    transition: top 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Animasyon artık 'top' değerine uygulandı */
   }
-  .main-content.pushed {
-    transform: translateX(100vw);
+
+  .navbar.active {
+    top: 0; /* Açıldığında ekranı kaplar */
+    left: 0; 
   }
-  .sidebar__links a {
-    font-size: 1.4rem;
+
+  /* Mobil Menü Yazıları Büyüyor */
+  .nav-links {
+    gap: 4rem;
+  }
+
+  .nav-links a {
+    font-size: 2.5rem;
+  }
+  
+  .nav-svg-icon {
+    width: 44px;
+    height: 44px;
   }
 }

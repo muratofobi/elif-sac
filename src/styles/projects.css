@@ -27,31 +27,48 @@
   margin-bottom: 5rem;
 }
 
-/* Back link */
+/* Back link - GÜNCELLENDİ */
 .projects__back {
-  display: inline-block;
+  display: inline-flex; /* inline-block yerine inline-flex daha dengeli durur */
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-display);
   font-size: 1.4rem;
-  color: var(--color-red-dark);
+  color: rgb(53, 53, 53) !important;
+  border: 1px solid rgb(53, 53, 53) !important;
   letter-spacing: 0.15em;
   margin-bottom: 4rem;
-  transition: all 0.3s;
+  
+  /* Zıplamayı engelleyen sihirli dokunuşlar: */
+  position: relative; 
+  top: 0; 
+  transition: all 0.3s ease;
+  vertical-align: top; /* Hizalamayı sabitleyelim */
 }
 
 .projects__back:hover {
-  color: var(--color-red);
-  transform: translateX(-10px); /* Geri butonu için ufak bir animasyon */
+  color: #fff !important;
+  border-color: var(--color-red) !important; /* Border'ı da belirginleştirdik */
+  
+  /* translateY yerine top kullanıyoruz, böylece grid yerinden oynamıyor */
+  top: -4px; 
 }
 
-/* ── Devleştirilmiş Grid ────────────────────────────────── */
+.projects__back:hover::before {
+  transform: scaleX(1);
+  transform-origin: right !important;
+}
+
+/* ── Devleştirilmiş Grid ── */
 .projects__grid {
   display: grid;
-  /* Yan yana 3 yerine 2 proje yaparak her birini devleştiriyoruz */
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px; /* Boşlukları artırdık */
-  /* Genişliği 900px sınırından kurtarıp 1600px'e kadar yayıyoruz */
+  gap: 30px;
   max-width: 1600px;
   margin: 0 auto;
+  
+  /* Butonun hareketinden etkilenmemesi için: */
+  clear: both; 
 }
 
 /* Each grid cell */
@@ -101,36 +118,101 @@
 /* Overlay text - Proje içine girmeden önceki bilgiler de artık büyük */
 .projects__cell-title {
   font-family: var(--font-display);
-  font-size: 2.2rem;
+  font-size: 1rem;
   color: #fff;
   letter-spacing: 0.1em;
   text-align: center;
   text-shadow: 2px 2px 10px #000;
 }
 
+/* Proje açıklamasını her yerde gizliyoruz */
 .projects__cell-desc {
+  display: none !important;
+}
+
+/* Overlay'i sadece başlığa odaklanacak şekilde güncelleyelim */
+.projects__cell-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Biraz daha şeffaf yapabiliriz görseller görünsün diye */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  padding: 2rem;
+}
+
+/* Başlık boyutunu PC ve Tablet için optimize edelim */
+.projects__cell-title {
   font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(1.8rem, 3vw, 2.5rem); /* Dinamik boyut */
+  color: #fff;
+  letter-spacing: 0.15em;
   text-align: center;
-  line-height: 1.6;
-  max-width: 80%;
+  text-transform: uppercase;
 }
 
 .projects__cell-link {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--color-red);
-  letter-spacing: 0.15em;
-  margin-top: 1rem;
-  border-bottom: 1px solid var(--color-red);
-  padding-bottom: 5px;
+  letter-spacing: 0.2em;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
 }
 
-/* ── Responsive ──────────────────────────────────────────── */
-@media (max-width: 1100px) {
+.projects__cell:hover .projects__cell-link {
+  border-bottom: 1px solid var(--color-red);
+  opacity: 1;
+}
+
+/* ── Projects Page Responsive Final ── */
+
+/* Tabletler (1024px altı) */
+@media (max-width: 1024px) {
+  .projects {
+    padding: 6rem 2rem;
+  }
   .projects__grid {
-    grid-template-columns: 1fr; /* Tabletlerde bile tek tek büyük görüksün */
-    max-width: 700px;
+    grid-template-columns: repeat(2, 1fr); /* 2'li kalmaya devam edebilir */
+    gap: 20px;
+  }
+}
+
+/* Telefonlar (768px altı) */
+@media (max-width: 768px) {
+  .projects__heading {
+    font-size: 2.8rem; /* Mobilde daha makul bir devlik */
+    letter-spacing: 0.15em;
+  }
+  
+  .projects__subheading {
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+  }
+
+  .projects__grid {
+    grid-template-columns: 1fr; /* Tekli sütuna geçiş */
+    max-width: 100%;
+  }
+
+  .projects__cell {
+    aspect-ratio: 1 / 1; /* Mobilde kare projeler daha şık durur */
+  }
+
+  .projects__cell-overlay {
+    opacity: 1; /* Mobilde hover olmadığı için bilgiler hep görünür olsun mu? */
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    justify-content: flex-end;
+    padding: 1.5rem;
+  }
+
+  .projects__cell-title {
+    font-size: 1.6rem;
   }
 }

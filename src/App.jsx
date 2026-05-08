@@ -27,9 +27,14 @@ function App() {
         <Routes location={background || location}>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
+          
+          {/* İŞTE EKLENEN YENİ ROTA: Direkt linkle veya state olmadan girilirse boş ekran vermemesi için */}
+          <Route path="/projects/:id" element={<ProjectModal />} />
+          
           <Route path="/admin" element={<Admin />} />
         </Routes>
 
+        {/* Modal olarak (arkaplanda Projects sayfası varken) açılması için */}
         {background && (
           <Routes>
             <Route path="/projects/:id" element={<ProjectModal />} />

@@ -13,8 +13,8 @@
   --font-display:    'Times New Roman', Times, serif;
 
   /* Kaydırma ile karıştırılacak renkler */
-  --bg-start: rgb(249, 241, 220);  
-  --bg-end:   rgb(1, 2, 17);     
+  --bg-start: rgb(250, 232, 228);  
+  --bg-end:   rgb(16, 4, 1);     
   
   --text-start: rgb(11, 6, 4);   
   --text-end:   rgb(249, 186, 76); 
@@ -147,22 +147,39 @@ p {
   transform-origin: left;
 }
 
-/* Ok ikonunun animasyonu */
-.btn-modern svg {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
+/* ── Buton İkonları Merkezi Yönetim (Responsive) ── */
+.btn-modern svg, 
+.bottom__btn svg, 
+.hero__btn svg {
+  width: clamp(16px, 2.5vw, 22px);
+  height: clamp(16px, 2.5vw, 22px);
+  margin-left: 0.6rem;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 0.3s ease; /* Animasyon merkezi hale geldi */
 }
 
-.btn-modern:hover svg {
-  transform: translateX(6px); /* Üzerine gelince ok sağa doğru kayar */
+/* Standart Butonlar: Üzerine gelince sağa kayar */
+.btn-modern:hover svg,
+.bottom__btn:hover svg,
+.hero__btn:hover svg {
+  transform: translateX(6px);
 }
 
-/* ── Geri Butonu Balyoz Çözümü (Kesin Sola Kayar) ── */
-a.projects__back.btn-modern.btn-back:hover svg {
+/* ── Geri (Back) Butonu İstisnası ── */
+/* Eğer butonun üzerinde 'btn-back' sınıfı varsa, oku sola kaydırır */
+.btn-back:hover svg {
   transform: translateX(-6px) !important;
 }
 
+/* Mobil İnce Ayar */
+@media screen and (max-width: 768px) {
+  .btn-modern svg, .bottom__btn svg, .hero__btn svg {
+    margin-left: 0.4rem;
+    stroke-width: 1.8;
+  }
+}
 
 
 /* ───────────────────────────────────────────────────────── */
@@ -221,6 +238,10 @@ a.projects__back.btn-modern.btn-back:hover svg {
   .hero__subtitle {
     font-size: 1.1rem;
     padding: 0 10px;
+  }
+  /* Mobilde menü üstten ineceği için ana sayfanın yana kaymasını engelliyoruz */
+  .main-content.pushed {
+    transform: none !important;
   }
 }
 

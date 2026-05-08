@@ -34,7 +34,7 @@ function Projects() {
             state={{ background: location }} 
             className="projects__cell"
           >
-            <img src={project.image} alt={project.title} className="projects__cell-img" />
+            <img src={project.image} alt={project.title} className="projects__cell-img" loading="lazy" />
             <div className="projects__cell-overlay">
               <span className="projects__cell-title">{project.title}</span>
               <span className="projects__cell-desc">{project.description}</span>
