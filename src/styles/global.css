@@ -173,6 +173,18 @@ p {
   transform: translateX(-6px) !important;
 }
 
+/* ── Main Content Push Effect (Masaüstü Sıkışma/İtilme Efekti) ── */
+.main-content {
+  /* Navbar'ın açılma animasyonuyla birebir aynı ivme ve süreyi kullanıyoruz */
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 100%;
+}
+
+.main-content.pushed {
+  /* Navbar 300px genişliğinde olduğu için siteyi tam 300px sağa itiyoruz */
+  transform: translateX(300px); 
+}
+
 /* ───────────────────────────────────────────────────────── */
 /* ── RESPONSIVE (MOBİL VE TABLET) UYARLAMALARI ──────────── */
 /* ───────────────────────────────────────────────────────── */

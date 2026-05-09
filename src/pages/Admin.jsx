@@ -1,188 +1,141 @@
-import { useState } from 'react'
-import '../styles/admin.css'
+import { useState } from 'react';
+// 1. Kendi oluşturduğumuz firebase bağlantılarını çağırıyoruz
+import { db, storage } from '../firebase'; 
+// 2. Storage (Resim) için gereken Firebase fonksiyonları
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// 3. Firestore (Veritabanı) için gereken Firebase fonksiyonları
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-const ADMIN_PASSWORD = 'mensrea7875'
+// Varsa kendi Admin CSS dosyanı buraya ekleyebilirsin
+// import '../styles/Admin.css'; 
 
 function Admin() {
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [featured, setFeatured] = useState(true)
-  const [selectedImages, setSelectedImages] = useState([])
+  // Formdaki verileri tutacağımız "State" (Hafıza) değişkenlerimiz
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   
-  const [editingId, setEditingId] = useState(null)
+  // Yükleme sırasında butonu kilitlemek ve kullanıcıya bilgi vermek için
+  const [isUploading, setIsUploading] = useState(false);
 
-  const [projects, setProjects] = useState([
-    { id: "proje-1", title: '30.01.2021', date: '30.01.2021', description: 'Sample desc', images: [] },
-    { id: "proje-2", title: 'Middle Earth', date: '15.05.2022', description: 'Legendary', images: [] }
-  ])
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImages(prev => [...prev, reader.result]);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function handleLogin(e) {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setLoggedIn(true)
-      setError('')
-    } else {
-      setError('Incorrect password.')
+  // Dosya seçildiğinde çalışacak fonksiyon
+  const handleFileChange = (e) => {
+    // Seçilen ilk dosyayı hafızaya al
+    if (e.target.files[0]) {
+      setImageFile(e.target.files[0]);
     }
-  }
+  };
 
-  function handlePublish(e) {
-    e.preventDefault()
-    const form = e.target
-    const title = form.title.value.trim()
-    const date = form.date.value.trim()
-    const description = form.description.value.trim()
-
-    if (!title || selectedImages.length === 0) return
-
-    if (editingId) {
-      setProjects(prev => prev.map(p => 
-        p.id === editingId 
-        ? { ...p, title, date, description, images: selectedImages, featured } 
-        : p
-      ))
-      setEditingId(null)
-    } else {
-      const newProj = { 
-        id: `proje-${Date.now()}`, 
-        title, date, description, 
-        images: selectedImages, 
-        featured 
-      }
-      setProjects(prev => [...prev, newProj])
-    }
+  // Form "Yükle" butonuna basıldığında çalışacak asıl sihirli fonksiyon (async olmalı çünkü internete bağlanıyor)
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Sayfanın yenilenmesini engelle
     
-    form.reset()
-    setSelectedImages([])
-    setFeatured(true)
-  }
-
-  function handleEdit(project) {
-    setEditingId(project.id)
-    setSelectedImages(project.images || [])
-    setFeatured(project.featured)
-    
-    const form = document.querySelector('.admin__project-form')
-    form.title.value = project.title
-    form.date.value = project.date || ''
-    form.description.value = project.description || ''
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  function handleDelete(id) {
-    if(window.confirm("Bu projeyi silmek istediğine emin misin?")) {
-        setProjects(prev => prev.filter(p => p.id !== id))
+    // Eğer resim seçilmemişse uyarı ver ve işlemi durdur
+    if (!imageFile) {
+      alert("Lütfen önce bir çizim görseli seç!");
+      return;
     }
-  }
 
-  if (!loggedIn) {
-    return (
-      <div className="admin">
-        <form className="admin__login" onSubmit={handleLogin}>
-          <h1 className="admin__login-title">Enter Password</h1>
-          <input className="admin__login-input" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-          <button className="admin__login-btn" type="submit">Enter →</button>
-        </form>
-      </div>
-    )
-  }
+    setIsUploading(true); // Yükleme başladı, butonu kilitliyoruz
+
+    try {
+      // ─── 1. AŞAMA: RESMİ STORAGE'A YÜKLEME ───
+      
+      // Aynı isimli dosyalar birbirini ezmesin diye ismin sonuna o anki tarihi ekliyoruz
+      const uniqueFileName = `${Date.now()}_${imageFile.name}`;
+      
+      // Storage'da 'drawings' adında bir klasör aç ve dosyayı oraya koy diyoruz
+      const storageRef = ref(storage, `drawings/${uniqueFileName}`);
+      
+      // Resmi fiziksel olarak Firebase'e gönderiyoruz (Bu işlem biraz sürebilir)
+      await uploadBytes(storageRef, imageFile);
+      
+      // Resim yüklendikten sonra, resmin internet adresini (URL) Firebase'den geri istiyoruz
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // ─── 2. AŞAMA: VERİLERİ FIRESTORE'A KAYDETME ───
+      
+      // Firestore'da 'projects' adında bir koleksiyon (tablo) oluştur ve içine şu verileri yaz:
+      await addDoc(collection(db, 'projects'), {
+        title: title,
+        description: description,
+        imageUrl: downloadURL, // Storage'dan aldığımız linki buraya koyduk
+        createdAt: serverTimestamp() // Projelerin sıralanması için eklenme tarihi
+      });
+
+      // ─── 3. AŞAMA: TEMİZLİK ───
+      alert("Sanat eseri başarıyla Mensrea arşivine eklendi!");
+      setTitle('');
+      setDescription('');
+      setImageFile(null);
+      // Dosya seçici input'u sıfırlamak için (Basit bir DOM müdahalesi)
+      document.getElementById('image-upload').value = '';
+
+    } catch (error) {
+      console.error("Yükleme sırasında hata oluştu: ", error);
+      alert("Bir hata oluştu. Lütfen konsolu kontrol et.");
+    } finally {
+      setIsUploading(false); // İşlem bitti (başarılı veya hatalı), kilidi aç
+    }
+  };
 
   return (
-    <div className="admin">
-      <div className="admin__bar">
-        <span className="admin__logo">Mensrea Admin</span>
-        <button className="admin__logout" onClick={() => setLoggedIn(false)}>log out</button>
-      </div>
+    <div className="admin-container" style={{ padding: '100px 50px', color: 'white' }}>
+      <h1>Yönetim Paneli</h1>
+      <p>Yeni bir eser yüklemek için aşağıdaki formu doldurun.</p>
 
-      <div className="admin__body">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'col', gap: '20px', maxWidth: '500px', marginTop: '30px' }}>
         
-        <div className="admin__card">
-          <p className="admin__card-title">
-            {editingId ? "Edit Project" : "Add New Project"}
-          </p>
-          <form className="admin__project-form" onSubmit={handlePublish}>
-            <div className="admin__field">
-              <label className="admin__label">Title</label>
-              <input className="admin__input" name="title" required />
-            </div>
-
-            <div className="admin__field">
-              <label className="admin__label">Date</label>
-              <input className="admin__input" name="date" placeholder="DD.MM.YYYY" />
-            </div>
-
-            <div className="admin__field">
-              <label className="admin__label">Media</label>
-              <div className="admin__upload-zone">
-                <input type="file" multiple accept="image/*" onChange={handleImageChange} id="file-upload" className="admin__file-hidden" />
-                <label htmlFor="file-upload" className="admin__upload-label">Upload Images</label>
-              </div>
-              <div className="admin__preview-grid">
-                {selectedImages.map((img, idx) => (
-                  <div key={idx} className="admin__preview-item">
-                    <img src={img} alt="preview" />
-                    <button type="button" onClick={() => setSelectedImages(prev => prev.filter((_, i) => i !== idx))}>×</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="admin__field">
-              <label className="admin__label">Description</label>
-              <textarea className="admin__textarea" name="description" />
-            </div>
-
-            <button className="admin__publish" type="submit">
-              {editingId ? "Update Project ✓" : "Publish Project →"}
-            </button>
-            
-            {editingId && (
-              <button 
-                type="button" 
-                className="admin__publish admin__publish--cancel" 
-                onClick={() => {
-                  setEditingId(null); 
-                  setSelectedImages([]); 
-                  document.querySelector('.admin__project-form').reset();
-                }}
-              >
-                Cancel Edit
-              </button>
-            )}
-          </form>
+        {/* Başlık Inputu */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label>Çizim Başlığı:</label>
+          <input 
+            type="text" 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            required 
+            style={{ padding: '10px', fontSize: '1rem' }}
+          />
         </div>
 
-        <div className="admin__card">
-          <p className="admin__card-title">Existing Projects</p>
-          <div className="admin__list">
-            {projects.map(p => (
-              <div key={p.id} className="admin__list-item">
-                <span className="admin__list-item-title">{p.title}</span>
-                <div className="admin__list-actions">
-                  <button className="admin__list-btn edit" onClick={() => handleEdit(p)}>edit</button>
-                  <button className="admin__list-btn delete" onClick={() => handleDelete(p.id)}>delete</button>
-                </div>
-              </div>
-            ))}
-            {projects.length === 0 && <p className="admin__empty">No projects yet.</p>}
-          </div>
+        {/* Açıklama Inputu */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label>Açıklama / Teknik:</label>
+          <textarea 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)} 
+            required 
+            rows="4"
+            style={{ padding: '10px', fontSize: '1rem' }}
+          />
         </div>
 
-      </div>
+        {/* Dosya Seçici */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label>Görsel Seç:</label>
+          <input 
+            id="image-upload"
+            type="file" 
+            accept="image/png, image/jpeg, image/webp" 
+            onChange={handleFileChange} 
+            required 
+            style={{ padding: '10px 0' }}
+          />
+        </div>
+
+        {/* Gönder Butonu */}
+        <button 
+          type="submit" 
+          disabled={isUploading} 
+          className="btn-modern"
+          style={{ marginTop: '10px', backgroundColor: isUploading ? 'gray' : 'transparent' }}
+        >
+          {isUploading ? 'Yükleniyor... Lütfen Bekle' : 'Eseri Yayınla'}
+        </button>
+
+      </form>
     </div>
-  )
+  );
 }
 
-export default Admin
+export default Admin;

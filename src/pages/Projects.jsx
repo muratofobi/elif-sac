@@ -1,10 +1,43 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import projects from '../data/projectsData.js'; 
+// ── Firebase bağlantılarını içeri alıyoruz ──
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '../firebase'; 
+
 import '../styles/projects.css';
 import ScrollReveal from '../components/ScrollReveal';
 
 function Projects() {
   const location = useLocation();
+  
+  // ── Dinamik Veri Hafızası (State) ──
+  const [projects, setProjects] = useState([]); // Firebase'den gelen projeler burada duracak
+  const [loading, setLoading] = useState(true); // Yükleniyor animasyonu için
+
+  // ── Sayfa açıldığı an Firebase'e bağlanıp verileri çeken fonksiyon ──
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        // 'projects' koleksiyonunu, 'createdAt' tarihine göre en yeniden en eskiye sırala
+        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        // Gelen karmaşık veriyi bizim kullanabileceğimiz bir diziye çevir
+        const projectsArray = querySnapshot.docs.map(doc => ({
+          id: doc.id, // Firebase'in verdiği eşsiz ID
+          ...doc.data()
+        }));
+        
+        setProjects(projectsArray);
+      } catch (error) {
+        console.error("Projeler çekilirken hata oluştu: ", error);
+      } finally {
+        setLoading(false); // Yükleme bitti
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   return (
     <div className="projects">
@@ -25,38 +58,46 @@ function Projects() {
         </Link>
 
       <h1 className="projects__heading">All Drawings</h1>
-      <p className="projects__subheading">{projects.length} works – click to view details</p>
+      
+      {/* Kaç eser olduğunu dinamik gösteriyoruz */}
+      <p className="projects__subheading">
+        {loading ? "Yükleniyor..." : `${projects.length} works – click to view details`}
+      </p>
 
       {/* ── Projeler Grid ── */}
       <div className="projects__grid">
-        {projects.map(project => (
-          
-          /* Kesişim Gözlemcisi (Animasyon) - Key değeri burada olmalı */
-          <ScrollReveal key={project.id}>
+        {loading ? (
+          // Veriler gelirken şık bir yükleniyor yazısı gösterelim
+          <p style={{ color: 'var(--text-end)', textAlign: 'center', width: '100%', fontSize: '1.5rem' }}>Eserler yükleniyor...</p>
+        ) : (
+          projects.map(project => (
             
-            <Link 
-              to={`/projects/${project.id}`} 
-              state={{ background: location }} 
-              className="projects__cell"
-            >
-              {/* Tembel Yükleme eklendi (loading="lazy") */}
-              <img 
-                src={project.image} 
-                alt={project.title} 
-                className="projects__cell-img" 
-                loading="lazy" 
-              />
+            <ScrollReveal key={project.id}>
               
-              <div className="projects__cell-overlay">
-                <span className="projects__cell-title">{project.title}</span>
-                <span className="projects__cell-desc">{project.description}</span>
-                <span className="projects__cell-link">View Details →</span>
-              </div>
-            </Link>
-            
-          </ScrollReveal>
+              <Link 
+                to={`/projects/${project.id}`} 
+                state={{ background: location }} 
+                className="projects__cell"
+              >
+                {/* Admin panelinde ismini imageUrl yapmıştık, o yüzden değiştirdik */}
+                <img 
+                  src={project.imageUrl} 
+                  alt={project.title} 
+                  className="projects__cell-img" 
+                  loading="lazy" 
+                />
+                
+                <div className="projects__cell-overlay">
+                  <span className="projects__cell-title">{project.title}</span>
+                  <span className="projects__cell-desc">{project.description}</span>
+                  <span className="projects__cell-link">View Details →</span>
+                </div>
+              </Link>
+              
+            </ScrollReveal>
 
-        ))}
+          ))
+        )}
       </div>
     </div>
   )
