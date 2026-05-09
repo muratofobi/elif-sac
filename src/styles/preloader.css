@@ -1,0 +1,19 @@
+.preloader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0d0d0d; /* Kesin karanlık arka plan */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999; 
+  transition: opacity 2s ease, filter 2s ease; /* 1.5 saniyelik duman efekti süresi */
+}
+
+.preloader-container.fade-out {
+  opacity: 0;
+  filter: blur(25px); /* Ekranda dağılan sis etkisi */
+  pointer-events: none; 
+}

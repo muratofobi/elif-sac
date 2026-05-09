@@ -17,7 +17,7 @@
   --bg-end:   rgb(16, 4, 1);     
   
   --text-start: rgb(11, 6, 4);   
-  --text-end:   rgb(249, 186, 76); 
+  --text-end:   rgb(247, 208, 142); 
 
   --scroll-ratio: 0;
 
@@ -173,15 +173,6 @@ p {
   transform: translateX(-6px) !important;
 }
 
-/* Mobil İnce Ayar */
-@media screen and (max-width: 768px) {
-  .btn-modern svg, .bottom__btn svg, .hero__btn svg {
-    margin-left: 0.4rem;
-    stroke-width: 1.8;
-  }
-}
-
-
 /* ───────────────────────────────────────────────────────── */
 /* ── RESPONSIVE (MOBİL VE TABLET) UYARLAMALARI ──────────── */
 /* ───────────────────────────────────────────────────────── */
@@ -242,6 +233,10 @@ p {
   /* Mobilde menü üstten ineceği için ana sayfanın yana kaymasını engelliyoruz */
   .main-content.pushed {
     transform: none !important;
+  }
+    .btn-modern svg, .bottom__btn svg, .hero__btn svg {
+    margin-left: 0.4rem;
+    stroke-width: 1.8;
   }
 }
 

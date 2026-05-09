@@ -1,6 +1,6 @@
 /* ── Featured Slider ─────────────────────────────────────── */
 .slider {
-  padding: 10rem 0 15rem; 
+  padding: 5rem 0 15rem; 
   background-color: transparent;
   overflow: hidden;
 }
@@ -121,7 +121,7 @@
 /* Tabletler İçin */
 @media (max-width: 1024px) {
   .slider {
-    padding: 8rem 0 10rem;
+    padding: 4rem 0 10rem;
   }
   .slider__window {
     padding: 0 2rem; 
@@ -140,7 +140,7 @@
 /* Telefonlar İçin */
 @media (max-width: 768px) {
   .slider {
-    padding: 5rem 0 7rem;
+    padding: 3rem 0 7rem;
   }
   .slider__window {
     padding: 0 1rem;
