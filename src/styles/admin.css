@@ -1,301 +1,333 @@
-/* ── Admin Page ──────────────────────────────────────────── */
+/* src/styles/admin.css */
+
 .admin {
-  min-height: 100vh;
-  background-color: var(--color-bg);
-}
-
-/* ── Top Bar ─────────────────────────────────────────────── */
-.admin__bar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 2rem;
-  background-color: #0a0a0a;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.admin__logo {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: var(--color-red);
-  letter-spacing: 0.3em;
-}
-
-.admin__badge {
-  font-family: var(--font-display);
-  font-size: 0.6rem;
-  color: var(--color-red-dark);
-  border: 1px solid var(--color-border);
-  padding: 2px 8px;
-  letter-spacing: 0.2em;
-}
-
-.admin__logout {
-  margin-left: auto;
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  color: #525252;
-  cursor: pointer;
-  letter-spacing: 0.1em;
-  background: none;
-  border: none;
-  transition: color 0.3s;
-}
-
-.admin__logout:hover {
-  color: var(--color-red-dark);
-}
-
-/* ── Login Screen ────────────────────────────────────────── */
-.admin__login {
+  padding-top: var(--section-spacing);
+  padding-bottom: var(--section-spacing);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 80vh;
-  gap: 1rem;
 }
 
-.admin__login-title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  color: var(--color-red);
-  letter-spacing: 0.3em;
-  margin-bottom: 1rem;
+.admin__header {
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
-.admin__login-input {
-  width: 300px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: #ffffff; /* Giriş şifresi beyaz */
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  padding: 0.75rem 1rem;
-  outline: none;
-  transition: border-color 0.3s;
+.admin__header h1 {
+  /* global.css'teki o devasa h1 ayarını kullanıyoruz */
+  color: var(--color-red-dark);
 }
 
-.admin__login-input:focus {
-  border-color: var(--color-red-dark);
-}
-
-.admin__login-btn {
-  width: 300px;
-  padding: 0.75rem;
-  background-color: var(--color-red-muted);
-  border: 1px solid var(--color-red-dark);
-  color: var(--color-red);
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.admin__login-btn:hover {
-  background-color: var(--color-red-dark);
-  color: #eecece;
-}
-
-/* ── Body ────────────────────────────────────────────────── */
 .admin__body {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
+  gap: 4rem;
+  width: 100%;
+  max-width: var(--container-width); /* global.css'ten gelen dev genişlik */
+  padding: 0 3%;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1024px) {
   .admin__body {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
 
-/* ── Cards ───────────────────────────────────────────────── */
 .admin__card {
-  background-color: #0d0d0d;
+  /* Sitenin genel yapısına uygun yarı saydam, lüks kart görünümü */
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  padding: 1.5rem;
+  padding: 3rem;
 }
 
 .admin__card-title {
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  color: var(--color-red-dark);
-  letter-spacing: 0.3em;
+  font-size: 2rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 1.2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1rem;
 }
 
-/* ── Form Fields (GÜNCELLENDİ) ───────────────────────────── */
 .admin__field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 0.8rem;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 .admin__label {
-  font-family: var(--font-display);
-  font-size: 0.65rem;
-  color: #d1d1d1; /* Etiketler daha açık gri */
-  letter-spacing: 0.15em;
+  font-size: 0.7rem; /* Kök fontumuz çok büyük olduğu için bunu ufak tutuyoruz */
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.7;
 }
 
 .admin__input,
 .admin__textarea {
-  background-color: var(--color-surface);
+  background-color: transparent; /* Sitenin arka planı arkadan görünsün */
   border: 1px solid var(--color-border);
-  color: #f0f0f0; /* Yazdığın yazılar beyaz/açık gri */
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  padding: 0.6rem 0.8rem;
+  padding: 1rem;
+  color: inherit;
+  font-size: 1rem;
   outline: none;
-  width: 100%;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .admin__input:focus,
 .admin__textarea:focus {
   border-color: var(--color-red-dark);
-  color: #ffffff; /* Focus olunca tam beyaz */
-}
-
-.admin__input::placeholder,
-.admin__textarea::placeholder {
-  color: #555; /* İpucu yazıları daha sönük */
+  background-color: rgba(0, 0, 0, 0.05); /* Odaklanınca hafif gölgelenme */
 }
 
 .admin__textarea {
-  height: 80px;
+  min-height: 150px;
   resize: vertical;
 }
 
-/* Featured toggle row */
-.admin__toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.8rem;
-}
-
-.admin__toggle {
-  width: 36px;
-  height: 18px;
-  background-color: var(--color-border);
-  border-radius: 9px;
-  position: relative;
+/* Sadece Dosya Seçici Input'a Özel Estetik */
+input[type="file"].admin__input {
   cursor: pointer;
-  transition: background-color 0.3s;
-  border: none;
+  padding: 0.8rem 1rem;
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
 
-.admin__toggle.on {
-  background-color: var(--color-red-dark);
-}
-
-.admin__toggle-thumb {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background-color: var(--color-red);
-  border-radius: 50%;
-  top: 3px;
-  left: 3px;
-  transition: left 0.3s;
-}
-
-.admin__toggle.on .admin__toggle-thumb {
-  left: 21px;
-}
-
-/* Publish button */
-.admin__publish {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: var(--color-red-muted);
-  border: 1px solid var(--color-red-dark);
-  color: var(--color-red);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  letter-spacing: 0.25em;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background-color 0.3s;
-}
-
-.admin__publish:hover {
-  background-color: var(--color-red-dark);
-  color: #fff;
-}
-
-/* Update butonunun küçük versiyonu olarak Cancel butonu */
-.admin__publish--cancel {
-  background-color: transparent;
-  border: 1px solid var(--color-red-muted);
-  font-size: 0.7rem; /* Daha küçük font */
-  padding: 0.4rem;   /* Daha dar alan */
-  margin-top: 0.8rem;
-  opacity: 0.7;
-}
-
-.admin__publish--cancel:hover {
-  background-color: var(--color-red-muted);
-  opacity: 1;
-  color: #fff;
-}
-
-/* ── Existing Projects List (GÜNCELLENDİ) ────────────────── */
+/* Mevcut Projeler Listesi */
 .admin__list {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 1rem;
 }
 
 .admin__list-item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--color-border);
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  color: #cccccc; /* Liste metinleri açık gri */
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.admin__list-item:hover {
+  border-color: var(--color-red-dark);
 }
 
 .admin__list-item-title {
-  color: #e0e0e0; /* Proje başlıkları daha parlak */
+  font-size: 1rem;
   letter-spacing: 0.05em;
 }
 
+.admin__empty {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* ── Admin Liste Aksiyon Butonları (Düzenle / Sil) ── */
 .admin__list-actions {
   display: flex;
-  gap: 0.8rem;
+  gap: 15px;
 }
 
-.admin__list-btn {
-  font-family: var(--font-display);
-  font-size: 0.65rem;
-  background: none;
+.admin__action-btn {
+  background: transparent;
   border: none;
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
   cursor: pointer;
-  letter-spacing: 0.1em;
-  transition: color 0.3s;
+  transition: all 0.3s ease;
+  padding: 5px 0;
 }
 
-.admin__list-btn.edit   { color: #777; }
-.admin__list-btn.delete { color: var(--color-red-muted); }
-.admin__list-btn.edit:hover   { color: #fff; }
-.admin__list-btn.delete:hover { color: var(--color-red); }
+.admin__action-btn.edit {
+  color: inherit;
+  opacity: 0.7;
+}
 
-.admin__empty {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  color: #444;
-  letter-spacing: 0.1em;
+.admin__action-btn.edit:hover {
+  opacity: 1;
+  color: #fff;
+}
+
+.admin__action-btn.delete {
+  color: var(--color-red);
+  opacity: 0.7;
+}
+
+.admin__action-btn.delete:hover {
+  opacity: 1;
+  color: var(--color-red-dark);
+}
+
+/* ── Düzenleme Modu: İptal Et Butonu ── */
+.admin__cancel-btn {
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: inherit;
+  margin-top: 15px;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin__cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── ÇOKLU GÖRSEL GALERİSİ (DRAG & DROP) ── */
+.admin__gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.admin__gallery-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  cursor: grab;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin__gallery-item:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.admin__gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* Sürükleme esnasında imajın takılmasını önler */
+}
+
+/* Sağ Üstteki Silme (X) Butonu */
+.admin__gallery-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.admin__gallery-remove:hover {
+  background-color: var(--color-red);
+  transform: scale(1.1);
+}
+
+/* Sol Alttaki Sıra Numarası (Kullanıcıya sıralamayı belli eder) */
+.admin__gallery-number {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: monospace;
+  pointer-events: none;
+}
+
+/* ── ÖZEL SİLME ONAY PENCERESİ (MODAL) ── */
+.admin__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Sitenin karanlık temasına uygun, arka planı bulanıklaştıran siyah perde */
+  background: rgba(0, 0, 0, 0.75); 
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Her şeyin üstünde olsun */
+}
+
+.admin__modal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 4rem;
+  max-width: 600px;
   text-align: center;
-  padding: 2rem 0;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+  animation: modalFadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.admin__modal h3 {
+  color: var(--color-red-dark);
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  letter-spacing: 0.15em;
+  font-weight: normal;
+}
+
+.admin__modal p {
+  color: #fff;
+  font-size: 1.2rem;
+  opacity: 0.8;
+  margin-bottom: 3rem;
+}
+
+.admin__modal-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.admin__modal-btn {
+  padding: 1rem 2.5rem;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid var(--color-border);
+  color: inherit;
+}
+
+.admin__modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.admin__modal-btn.confirm {
+  border-color: var(--color-red-dark);
+  color: var(--color-red);
+}
+
+.admin__modal-btn.confirm:hover {
+  background: var(--color-red-dark);
+  color: white;
 }

@@ -1,139 +1,274 @@
-import { useState } from 'react';
-// 1. Kendi oluşturduğumuz firebase bağlantılarını çağırıyoruz
+import { useState, useEffect, useRef } from 'react';
 import { db, storage } from '../firebase'; 
-// 2. Storage (Resim) için gereken Firebase fonksiyonları
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-// 3. Firestore (Veritabanı) için gereken Firebase fonksiyonları
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
-// Varsa kendi Admin CSS dosyanı buraya ekleyebilirsin
-// import '../styles/Admin.css'; 
+import '../styles/admin.css'; 
 
 function Admin() {
-  // Formdaki verileri tutacağımız "State" (Hafıza) değişkenlerimiz
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [imageFile, setImageFile] = useState(null);
   
-  // Yükleme sırasında butonu kilitlemek ve kullanıcıya bilgi vermek için
+  const [gallery, setGallery] = useState([]); 
+  const [deletedUrls, setDeletedUrls] = useState([]); 
+  
   const [isUploading, setIsUploading] = useState(false);
+  const [editingId, setEditingId] = useState(null); 
+  const [projects, setProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
 
-  // Dosya seçildiğinde çalışacak fonksiyon
-  const handleFileChange = (e) => {
-    // Seçilen ilk dosyayı hafızaya al
-    if (e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+  // ── ÖZEL SİLME PENCERESİ İÇİN STATE ──
+  const [projectToDelete, setProjectToDelete] = useState(null);
+
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
+
+  const fetchProjects = async () => {
+    try {
+      const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const projectsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProjects(projectsData);
+    } catch (error) {
+      console.error("Projeler çekilirken hata:", error);
+    } finally {
+      setLoadingProjects(false);
     }
   };
 
-  // Form "Yükle" butonuna basıldığında çalışacak asıl sihirli fonksiyon (async olmalı çünkü internete bağlanıyor)
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Sayfanın yenilenmesini engelle
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const newImages = files.map(file => ({
+      id: Math.random().toString(36).substr(2, 9), 
+      url: URL.createObjectURL(file), 
+      file: file,
+      isExisting: false
+    }));
+
+    setGallery(prev => [...prev, ...newImages]);
+    e.target.value = ''; 
+  };
+
+  const removeImage = (idToRemove, urlToRemove, isExisting) => {
+    setGallery(gallery.filter(item => item.id !== idToRemove));
+    if (isExisting) {
+      setDeletedUrls(prev => [...prev, urlToRemove]);
+    }
+  };
+
+  const handleSort = () => {
+    let _gallery = [...gallery];
+    const draggedItemContent = _gallery.splice(dragItem.current, 1)[0];
+    _gallery.splice(dragOverItem.current, 0, draggedItemContent);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    setGallery(_gallery);
+  };
+
+  // ── GERÇEK SİLME İŞLEMİ (Özel pencereden EVET denirse çalışır) ──
+  const confirmDelete = async () => {
+    if (!projectToDelete) return;
     
-    // Eğer resim seçilmemişse uyarı ver ve işlemi durdur
-    if (!imageFile) {
-      alert("Lütfen önce bir çizim görseli seç!");
+    try {
+      await deleteDoc(doc(db, 'projects', projectToDelete.id));
+      
+      const urlsToDelete = projectToDelete.imageUrls || (projectToDelete.imageUrl ? [projectToDelete.imageUrl] : []);
+      for (const url of urlsToDelete) {
+        const imageRef = ref(storage, url);
+        await deleteObject(imageRef).catch(err => console.log("Görsel silinirken uyarı:", err));
+      }
+
+      fetchProjects();
+    } catch (error) {
+      console.error("Silme hatası:", error);
+    } finally {
+      setProjectToDelete(null); // Pencereyi kapat
+    }
+  };
+
+  const handleEditClick = (project) => {
+    setEditingId(project.id);
+    setTitle(project.title);
+    setDescription(project.description);
+    
+    const existingUrls = project.imageUrls || (project.imageUrl ? [project.imageUrl] : []);
+    const initialGallery = existingUrls.map(url => ({
+      id: Math.random().toString(36).substr(2, 9),
+      url: url,
+      file: null,
+      isExisting: true
+    }));
+    
+    setGallery(initialGallery);
+    setDeletedUrls([]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setTitle('');
+    setDescription('');
+    setGallery([]);
+    setDeletedUrls([]);
+    if (document.getElementById('image-upload')) {
+      document.getElementById('image-upload').value = '';
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
+    
+    if (gallery.length === 0) {
+      alert("Lütfen en az bir görsel ekleyin!");
       return;
     }
-
-    setIsUploading(true); // Yükleme başladı, butonu kilitliyoruz
+    
+    setIsUploading(true); 
 
     try {
-      // ─── 1. AŞAMA: RESMİ STORAGE'A YÜKLEME ───
-      
-      // Aynı isimli dosyalar birbirini ezmesin diye ismin sonuna o anki tarihi ekliyoruz
-      const uniqueFileName = `${Date.now()}_${imageFile.name}`;
-      
-      // Storage'da 'drawings' adında bir klasör aç ve dosyayı oraya koy diyoruz
-      const storageRef = ref(storage, `drawings/${uniqueFileName}`);
-      
-      // Resmi fiziksel olarak Firebase'e gönderiyoruz (Bu işlem biraz sürebilir)
-      await uploadBytes(storageRef, imageFile);
-      
-      // Resim yüklendikten sonra, resmin internet adresini (URL) Firebase'den geri istiyoruz
-      const downloadURL = await getDownloadURL(storageRef);
+      const finalUrls = [];
+      for (let item of gallery) {
+        if (item.isExisting) {
+          finalUrls.push(item.url); 
+        } else {
+          const uniqueFileName = `${Date.now()}_${item.file.name}`;
+          const storageRef = ref(storage, `drawings/${uniqueFileName}`);
+          await uploadBytes(storageRef, item.file);
+          const downloadURL = await getDownloadURL(storageRef);
+          finalUrls.push(downloadURL);
+        }
+      }
 
-      // ─── 2. AŞAMA: VERİLERİ FIRESTORE'A KAYDETME ───
-      
-      // Firestore'da 'projects' adında bir koleksiyon (tablo) oluştur ve içine şu verileri yaz:
-      await addDoc(collection(db, 'projects'), {
-        title: title,
-        description: description,
-        imageUrl: downloadURL, // Storage'dan aldığımız linki buraya koyduk
-        createdAt: serverTimestamp() // Projelerin sıralanması için eklenme tarihi
-      });
+      for (let url of deletedUrls) {
+        const imageRef = ref(storage, url);
+        await deleteObject(imageRef).catch(e => console.log(e));
+      }
 
-      // ─── 3. AŞAMA: TEMİZLİK ───
-      alert("Sanat eseri başarıyla Mensrea arşivine eklendi!");
-      setTitle('');
-      setDescription('');
-      setImageFile(null);
-      // Dosya seçici input'u sıfırlamak için (Basit bir DOM müdahalesi)
-      document.getElementById('image-upload').value = '';
+      if (editingId) {
+        await updateDoc(doc(db, 'projects', editingId), {
+          title: title,
+          description: description,
+          imageUrls: finalUrls 
+        });
+      } else {
+        await addDoc(collection(db, 'projects'), {
+          title: title,
+          description: description,
+          imageUrls: finalUrls, 
+          createdAt: serverTimestamp() 
+        });
+      }
 
+      resetForm(); 
+      fetchProjects(); 
     } catch (error) {
-      console.error("Yükleme sırasında hata oluştu: ", error);
-      alert("Bir hata oluştu. Lütfen konsolu kontrol et.");
+      console.error("İşlem sırasında hata:", error);
     } finally {
-      setIsUploading(false); // İşlem bitti (başarılı veya hatalı), kilidi aç
+      setIsUploading(false); 
     }
   };
 
   return (
-    <div className="admin-container" style={{ padding: '100px 50px', color: 'white' }}>
-      <h1>Yönetim Paneli</h1>
-      <p>Yeni bir eser yüklemek için aşağıdaki formu doldurun.</p>
+    <div className="admin">
+      
+      {/* ── ÖZEL ONAY PENCERESİ (MODAL) ── */}
+      {projectToDelete && (
+        <div className="admin__modal-overlay">
+          <div className="admin__modal">
+            <h3>EMİN MİSİNİZ?</h3>
+            <p>"{projectToDelete.title}" adlı eseri arşivden tamamen silmek üzeresiniz. Bu işlem geri alınamaz.</p>
+            <div className="admin__modal-actions">
+              <button onClick={() => setProjectToDelete(null)} className="admin__modal-btn cancel">İPTAL ET</button>
+              <button onClick={confirmDelete} className="admin__modal-btn confirm">SİL</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'col', gap: '20px', maxWidth: '500px', marginTop: '30px' }}>
-        
-        {/* Başlık Inputu */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label>Çizim Başlığı:</label>
-          <input 
-            type="text" 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            required 
-            style={{ padding: '10px', fontSize: '1rem' }}
-          />
+      <div className="admin__header">
+        <h1>MENSREA'NIN MUTFAĞI</h1>
+      </div>
+
+      <div className="admin__body">
+        <div className="admin__card">
+          <h2 className="admin__card-title" style={{ color: editingId ? 'var(--color-red)' : 'inherit' }}>
+            {editingId ? 'ESERİ GÜNCELLE' : 'YENİ ESER YÜKLE'}
+          </h2>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="admin__field">
+              <label className="admin__label">Çizim Başlığı</label>
+              <input type="text" className="admin__input" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </div>
+
+            <div className="admin__field">
+              <label className="admin__label">Açıklama / Teknik</label>
+              <textarea className="admin__textarea" value={description} onChange={(e) => setDescription(e.target.value)} required />
+            </div>
+
+            <div className="admin__field">
+              <label className="admin__label">Galeri Görselleri (Sürükleyip Sıralayabilirsiniz)</label>
+              
+              <div className="admin__gallery-grid">
+                {gallery.map((item, index) => (
+                  <div key={item.id} className="admin__gallery-item" draggable onDragStart={() => (dragItem.current = index)} onDragEnter={() => (dragOverItem.current = index)} onDragEnd={handleSort} onDragOver={(e) => e.preventDefault()}>
+                    <img src={item.url} alt={`Gallery ${index}`} />
+                    <button type="button" className="admin__gallery-remove" onClick={() => removeImage(item.id, item.url, item.isExisting)}>✕</button>
+                    <div className="admin__gallery-number">{index + 1}</div>
+                  </div>
+                ))}
+              </div>
+
+              <input id="image-upload" type="file" multiple className="admin__input" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} style={{ marginTop: gallery.length > 0 ? '1rem' : '0' }} />
+            </div>
+
+            <button type="submit" className="btn-modern" disabled={isUploading} style={{ width: '100%', marginTop: '1rem' }}>
+              <span>{isUploading ? 'YÜKLENİYOR...' : (editingId ? 'DEĞİŞİKLİKLERİ KAYDET' : 'ESERİ YAYINLA')}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+
+            {editingId && (
+              <button type="button" onClick={resetForm} className="admin__cancel-btn" disabled={isUploading}>İPTAL ET</button>
+            )}
+          </form>
         </div>
 
-        {/* Açıklama Inputu */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label>Açıklama / Teknik:</label>
-          <textarea 
-            value={description} 
-            onChange={(e) => setDescription(e.target.value)} 
-            required 
-            rows="4"
-            style={{ padding: '10px', fontSize: '1rem' }}
-          />
+        <div className="admin__card">
+          <h2 className="admin__card-title">ARŞİVDEKİ ESERLER</h2>
+          <div className="admin__list">
+            {loadingProjects ? (
+              <p className="admin__empty">Eserler yükleniyor...</p>
+            ) : projects.length === 0 ? (
+              <p className="admin__empty">Henüz hiç eser yüklenmemiş.</p>
+            ) : (
+              projects.map(project => (
+                <div key={project.id} className="admin__list-item">
+                  <span className="admin__list-item-title">{project.title}</span>
+                  
+                  <div className="admin__list-actions">
+                    <button className="admin__action-btn edit" onClick={() => handleEditClick(project)}>DÜZENLE</button>
+                    {/* Artık window.confirm yerine kendi popup'ımızı tetikliyoruz */}
+                    <button className="admin__action-btn delete" onClick={() => setProjectToDelete(project)}>SİL</button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        {/* Dosya Seçici */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label>Görsel Seç:</label>
-          <input 
-            id="image-upload"
-            type="file" 
-            accept="image/png, image/jpeg, image/webp" 
-            onChange={handleFileChange} 
-            required 
-            style={{ padding: '10px 0' }}
-          />
-        </div>
-
-        {/* Gönder Butonu */}
-        <button 
-          type="submit" 
-          disabled={isUploading} 
-          className="btn-modern"
-          style={{ marginTop: '10px', backgroundColor: isUploading ? 'gray' : 'transparent' }}
-        >
-          {isUploading ? 'Yükleniyor... Lütfen Bekle' : 'Eseri Yayınla'}
-        </button>
-
-      </form>
+      </div>
     </div>
   );
 }

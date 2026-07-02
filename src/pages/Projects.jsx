@@ -79,9 +79,9 @@ function Projects() {
                 state={{ background: location }} 
                 className="projects__cell"
               >
-                {/* Admin panelinde ismini imageUrl yapmıştık, o yüzden değiştirdik */}
+                {/* Çoklu resim dizisindeki ilk görseli kapak resmi yapıyoruz */}
                 <img 
-                  src={project.imageUrl} 
+                  src={project.imageUrls?.[0] || project.imageUrl || ''} 
                   alt={project.title} 
                   className="projects__cell-img" 
                   loading="lazy" 

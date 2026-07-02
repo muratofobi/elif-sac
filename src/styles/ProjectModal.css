@@ -1,25 +1,25 @@
-/* ── ProjectModal.css (Tüm Cihazlar İçin Premium Tasarım) ── */
-
-/* ── Arka Plan Bulanıklığı ── */
+/* ── ARKA PLAN VE MODAL KAPSAYICI ── */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.85); /* PC'deki asil koyuluk */
-  backdrop-filter: blur(8px); /* PC'deki blurlu arka plan */
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; /* Dikeyde merkezle */
+  justify-content: center; /* Yatayda merkezle */
   z-index: 1000;
-  padding: 2rem; /* Masaüstünde kenarlardan boşluk */
+  padding: 1rem;
+  overflow-y: auto; /* İçerik ekranı geçerse scroll'u burada tut */
 }
 
-/* ── Modalın Kendisi (Cam/Soft Panel) ── */
 .modal-content {
   background: #0d0d0d;
   width: 100%;
-  max-width: 1200px; /* Masaüstü devliği sınırı */
-  max-height: 90vh; /* Masaüstünde üstten/alttan boşluk */
-  border-radius: 12px; /* Köşeleri yuvarlak, PC'deki gibi tok */
+  max-width: 1300px;
+  min-height: 200px;
+  max-height: 90vh; /* Ekranın %90'ını geçmesin */
+  height: auto;     /* İçeriğe göre uzasın/kısalsın */
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -33,7 +33,7 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── Kapatma Butonu (X) ── */
+/* ── KAPATMA BUTONU ── */
 .modal-close-btn {
   position: absolute;
   top: 1.5rem;
@@ -54,170 +54,138 @@
 
 .modal-close-btn:hover {
   background: var(--color-red);
-  transform: rotate(90deg); /* Üzerine gelince döner */
+  transform: rotate(90deg);
 }
 
-.modal-close-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-/* ── Düzen ── */
+/* ── ANA DÜZEN (GRID) ── */
 .modal-layout {
-  display: flex;
-  flex-direction: row; /* Masaüstü: yan yana (resim sol, yazı sağ) */
+  display: grid;
+  grid-template-columns: 1fr 400px; /* Görsel alan esnek, yazı alanı 400px sabit */
   width: 100%;
   height: 100%;
-  overflow-y: auto; /* İçerik taşarsa sadece modalın içi kaysın */
 }
 
-/* ── Görsel Alanı (Sol) ── */
-.modal-media {
-  flex: 1.2;
-  background: #000;
+/* ── SOL: INSTAGRAM STİLİ SLIDER ── */
+.modal-media-slider {
+  position: relative;
+  width: 100%;
+  /* aspect-ratio'yu sildik, artık yükseklik içeriğe göre belirlenir */
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 50vh;
+  background-color: #000;
+  overflow: hidden;
+  /* Modalın kendi yüksekliği içinde görselin esnemesine izin veriyoruz */
+  min-height: 400px; 
 }
 
-.modal-img {
+.modal-slider-img {
   width: 100%;
   height: 100%;
-  max-height: 90vh;
-  object-fit: contain; /* Çizimi kesmez, tamamını sığdırır */
+  /* ── ÖNEMLİ: Kırpmayı durduruyoruz ── */
+  object-fit: contain; 
+  /* Görselin modalın dışına taşmaması için sınırı koruyoruz */
+  max-height: 85vh; 
 }
 
-/* ── Bilgi Alanı (Sağ) ── */
+/* Yön Okları */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.slider-arrow:hover { background: rgba(255, 255, 255, 0.2); }
+.slider-arrow.left { left: 15px; }
+.slider-arrow.right { right: 15px; }
+
+/* Dot Göstergeleri */
+.slider-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.slider-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+.slider-dot.active { background-color: white; }
+
+/* ── SAĞ: BİLGİ ALANI ── */
 .modal-info {
-  flex: 0.8;
-  padding: 4rem 3rem;
-  background: linear-gradient(to right, #0d0d0d, #141414);
+  padding: 2.5rem;
+  background: #0a0a0a;
+  overflow-y: auto;
+  border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .modal-title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-size: 2.5rem;
   color: var(--color-red);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   font-weight: 300;
-  letter-spacing: -1px;
-}
-
-.modal-date {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.3);
-  margin-bottom: 2.5rem;
 }
 
 .modal-description {
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.8;
   color: #aaa;
   font-family: 'Times New Roman', serif;
   font-style: italic;
-  white-space: pre-line;
+  white-space: pre-wrap;
 }
 
-/* ───────────────────────────────────────────────────────── */
-/* ── RESPONSIVE DÜZENLEME (Yeni Plan) ── */
-/* ───────────────────────────────────────────────────────── */
-
-/* ── TABLETLER (1024px altı) ── */
-/* Ipad dikey/yatay ve benzeri tabletler */
+/* ── RESPONSIVE ── */
 @media screen and (max-width: 1024px) {
-  .modal-backdrop {
-    padding: 3rem; /* PC'den biraz daha fazla nefes alma boşluğu */
-  }
-  
-  .modal-content {
-    /* Masaüstündeki devasa boyutu biraz kısıtlayalım, ama tam ekran yapmayalım */
-    max-width: 900px; /* Tabletin dikey genişliği civarı */
-    width: 100%;
-    max-height: 85vh; /* Masaüstünden biraz daha az yükseklik */
-    border-radius: 12px; /* Köşeleri yuvarlak tutalım, PC'deki gibi */
-    
-    /* image_28.png'daki tam ekran sorununu çözen sihir */
-    overflow: hidden; 
-  }
-  
-  /* PC'deki "yan yana" (row) düzenini tablette de koruyoruz */
-  .modal-layout {
-    flex-direction: row; 
-    overflow-y: auto; 
-  }
-  
-  /* Görsel ve Yazı alanlarının oranlarını tablette esnetelim */
-  .modal-media {
-    flex: 1; /* %50 görsel */
-  }
-  
-  .modal-info {
-    flex: 1; /* %50 yazı */
-    padding: 3rem 2rem; /* Padding'i tablette biraz azaltalım */
-  }
+  .modal-layout { grid-template-columns: 1fr; }
+  .modal-content { height: 60vh; }
+  .modal-info { border-left: none; border-top: 1px solid var(--color-border); }
 }
 
-/* ───────────────────────────────────────────────────────── */
-/* ── TELEFONLAR (768px altı) ── */
-/* ───────────────────────────────────────────────────────── */
+/* Telefonlar için özel oran ayarı */
 @media screen and (max-width: 768px) {
-  .modal-backdrop {
-    padding: 1rem; /* Telefonda kenar boşluklarını minimumda tutalım */
+.modal-media-slider {
+    height: 300px; /* Mobilde görsel alanını biraz daha kompakt tuttuk */
+  }
+
+  .modal-backdrop { 
+    padding: 0.5rem; 
+    /* align-items: center ile mobilde de ortalı kalacak */
   }
 
   .modal-content {
-    max-height: 95vh; /* Telefonda ekranın neredeyse tamamını kullanabiliriz */
+    height: auto; /* Sabit yükseklik kalktı */
+    margin-bottom: 2rem; /* En altta biraz boşluk bırak */
   }
 
-  /* Telefonda dikey dizilime devam ediyoruz (resim üstte, yazı altta) */
-  .modal-layout {
-    flex-direction: column; 
-    overflow-y: auto; 
-  }
-  
-  .modal-media {
-    flex: none;
-    /* height: 50vh; */ /* <- Bu satırı güncelledik */
-    height: 35vh; /* <- DAHA KISA RESİM ALANI */
-    min-height: auto;
-    position: relative;
-  }
-  
   .modal-info {
-    flex: none;
-    padding: 2.5rem 1.5rem; /* Padding'i mobilde azalttık */
-    justify-content: start; /* Mobilde yazıları üste çektik */
-    background: #0d0d0d;
-    border-radius: 30px 30px 0 0; /* Üstten yuvarlama */
-    margin-top: -40px; /* Görselin üzerine biner */
-    z-index: 5;
-    
-    /* min-height: 50vh; */ /* <- BU SATIRI SİLİYORUZ VEYA AZALTIYORUZ */
-    min-height: auto; /* <- İÇERİĞE GÖRE AYARLANSIN */
-  }
-  
-  .modal-title {
-    /* font-size: 2.2rem; */ /* <- Bu satırı güncelledik */
-    font-size: 1.8rem; /* <- DAHA KÜÇÜK VE ORANTILI BAŞLIK */
-  }
-  
-  .modal-date {
-    /* font-size: 1.1rem; */ /* <- Bu satırı güncelledik */
-    font-size: 1rem; /* <- DAHA KÜÇÜK TARİH */
-  }
-  
-  .modal-description {
-    font-size: 1rem; /* Yazıyı telefonda orantılı küçülttük */
-  }
-  
-  .modal-close-btn {
-    top: 1rem;
-    right: 1rem;
-    background: rgba(0, 0, 0, 0.7); /* Mobilde kapatma butonu daha belirgin olsun */
+    /* Padding'i içeriğin ihtiyacına göre ayarladık */
+    padding: 1.5rem;
   }
 }

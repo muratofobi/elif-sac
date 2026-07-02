@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import projects from '../data/projectsData.js'
+// ── Firebase bağlantılarını içeri alıyoruz ──
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../firebase'
+
 import '../styles/featuredSlider.css'
 
 function FeaturedSlider() {
@@ -8,20 +11,58 @@ function FeaturedSlider() {
   const location = useLocation()
 
   const [isDragging, setIsDragging] = useState(false)
-  
-  // Animasyon ve sürükleme referansları (State yerine Ref kullanıyoruz ki gecikme olmasın)
+  const [featuredProjects, setFeaturedProjects] = useState([]) // Rastgele seçilen projeler
+  const [loading, setLoading] = useState(true)
+
+  // Animasyon ve sürükleme referansları
   const startX = useRef(0)
   const scrollLeft = useRef(0)
   const requestRef = useRef(null)
   const isPaused = useRef(false)
   const resumeTimeoutRef = useRef(null)
 
-  // Yağ gibi akan otomatik kaydırma fonksiyonu
+  // ── 1. FİREBASE'DEN VERİ ÇEKME VE RASTGELE 5 ESER SEÇME ──
+  useEffect(() => {
+    const fetchAndRandomizeProjects = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'projects'))
+        const allProjects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+
+        // Eğer veritabanı boşsa işlem yapma
+        if (allProjects.length === 0) {
+          setLoading(false)
+          return
+        }
+
+        // TÜM DİZİYİ Fisher-Yates algoritması ile rastgele karıştır
+        let shuffled = [...allProjects]
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        // Karıştırılmış tam listeden ilk 8 tanesini al
+        const selectedProjects = shuffled.slice(0, 8)
+        setFeaturedProjects(selectedProjects)
+
+      } catch (error) {
+        console.error("Öne çıkan projeler çekilirken hata:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAndRandomizeProjects()
+  }, [])
+
+  // ── 2. KAYDIRMA ANİMASYONU ──
   const animate = () => {
     if (!isPaused.current && trackRef.current) {
-      trackRef.current.scrollLeft += 1; // Kayma hızı (1 yaparsan yavaş, 2 yaparsan hızlı akar)
+      trackRef.current.scrollLeft += 1; 
       
-      // En sona geldiğinde çaktırmadan başa sarması için:
       if (trackRef.current.scrollLeft >= trackRef.current.scrollWidth - trackRef.current.clientWidth - 1) {
         trackRef.current.scrollLeft = 0;
       }
@@ -29,17 +70,19 @@ function FeaturedSlider() {
     requestRef.current = requestAnimationFrame(animate)
   }
 
-  // Sayfa yüklendiğinde animasyonu başlat
+  // Animasyonu sadece veriler yüklendikten sonra başlat
   useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(requestRef.current) // Sayfadan çıkınca hafızayı temizle
-  }, [])
+    if (!loading && featuredProjects.length > 0) {
+      requestRef.current = requestAnimationFrame(animate)
+    }
+    return () => cancelAnimationFrame(requestRef.current) 
+  }, [loading, featuredProjects])
 
-  // ── SÜRÜKLEME KONTROLLERİ ──
+  // ── 3. SÜRÜKLEME KONTROLLERİ ──
   const handlePointerDown = (e) => {
-    isPaused.current = true; // Tuttuğu an kaymayı durdur
+    isPaused.current = true;
     setIsDragging(true);
-    clearTimeout(resumeTimeoutRef.current); // Varsa eski 1 saniyelik sayacı iptal et
+    clearTimeout(resumeTimeoutRef.current);
 
     startX.current = e.pageX || (e.touches ? e.touches[0].pageX : 0);
     scrollLeft.current = trackRef.current.scrollLeft;
@@ -49,7 +92,6 @@ function FeaturedSlider() {
     if (!isDragging) return;
     setIsDragging(false);
 
-    // Bıraktıktan tam 1 saniye sonra (1000ms) otomatik kaymayı tekrar başlat
     clearTimeout(resumeTimeoutRef.current);
     resumeTimeoutRef.current = setTimeout(() => {
       isPaused.current = false;
@@ -63,16 +105,15 @@ function FeaturedSlider() {
     const x = e.pageX || (e.touches ? e.touches[0].pageX : 0);
     if (!x) return;
 
-    const walk = (x - startX.current) * 1.5; // Sürükleme hassasiyeti
+    const walk = (x - startX.current) * 1.5; 
     trackRef.current.scrollLeft = scrollLeft.current - walk;
   }
 
-  // Öne çıkanları al
-  const featured = projects.filter(p => p.featured === true || p.featured === "true")
-  const displayList = featured.length > 0 ? featured : projects
+  // Kesintisiz döngü hissiyatı için listeyi üç defa arka arkaya ekliyoruz
+  const infiniteList = [...featuredProjects, ...featuredProjects, ...featuredProjects]
 
-  // Kesintisiz (sonsuz) döngü hissiyatı için listeyi ikiye katlıyoruz
-  const infiniteList = [...displayList, ...displayList, ...displayList]
+  // Eğer veri yükleniyorsa veya hiç proje yoksa boş bir alan döndür (sayfa düzeni bozulmasın)
+  if (loading || featuredProjects.length === 0) return <section className="slider" style={{minHeight: '400px'}}></section>;
 
   return (
     <section id="projeler" className="slider">
@@ -82,7 +123,6 @@ function FeaturedSlider() {
           className={`slider__track ${isDragging ? 'dragging' : ''}`} 
           ref={trackRef} 
           
-          // Fare ve Dokunmatik olayları
           onMouseDown={handlePointerDown}
           onMouseUp={handlePointerUpOrLeave}
           onMouseLeave={handlePointerUpOrLeave}
@@ -94,7 +134,8 @@ function FeaturedSlider() {
           onTouchMove={handlePointerMove}
         >
           {infiniteList.map((project, index) => {
-            const displayImage = project.images?.[0] || project.image || '';
+            // Galeri dizisinin ilk elemanını slider kapak görseli olarak çekiyoruz
+            const displayImage = project.imageUrls?.[0] || project.imageUrl || '';
 
             return (
               <Link 
@@ -102,7 +143,7 @@ function FeaturedSlider() {
                 to={`/projects/${project.id}`} 
                 state={{ background: location }}
                 className="slider__card"
-                onClick={(e) => isDragging && e.preventDefault()} // Sürüklerken yanlışlıkla tıklanmayı engelle
+                onClick={(e) => isDragging && e.preventDefault()} 
               >
                 <div className="slider__card-img-wrap">
                   {displayImage ? (
@@ -119,16 +160,6 @@ function FeaturedSlider() {
                 </div>
                 <div className="slider__card-body">
                   <h3 className="slider__card-title">{project.title}</h3>
-                  {project.date && (
-                    <span className="project-date" style={{
-                      color: 'var(--color-red)', 
-                      fontSize: '1.2rem', 
-                      display: 'block', 
-                      marginBottom: '15px'
-                    }}>
-                      {project.date}
-                    </span>
-                  )}
                   <p className="slider__card-desc">{project.description}</p>
                 </div>
               </Link>
@@ -140,4 +171,4 @@ function FeaturedSlider() {
   )
 }
 
-export default FeaturedSlider
+export default FeaturedSlider;
