@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-// ── Firebase bağlantılarını içeri alıyoruz ──
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase'; 
 
@@ -10,21 +9,20 @@ import ScrollReveal from '../components/ScrollReveal';
 function Projects() {
   const location = useLocation();
   
-  // ── Dinamik Veri Hafızası (State) ──
-  const [projects, setProjects] = useState([]); // Firebase'den gelen projeler burada duracak
-  const [loading, setLoading] = useState(true); // Yükleniyor animasyonu için
+  const [projects, setProjects] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  
+  // ── Sıralama Hafızası: 'desc' (Yeniden Eskiye) veya 'asc' (Eskiden Yeniye) ──
+  const [sortOrder, setSortOrder] = useState('desc'); 
 
-  // ── Sayfa açıldığı an Firebase'e bağlanıp verileri çeken fonksiyon ──
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // 'projects' koleksiyonunu, 'createdAt' tarihine göre en yeniden en eskiye sırala
         const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
         const querySnapshot = await getDocs(q);
         
-        // Gelen karmaşık veriyi bizim kullanabileceğimiz bir diziye çevir
         const projectsArray = querySnapshot.docs.map(doc => ({
-          id: doc.id, // Firebase'in verdiği eşsiz ID
+          id: doc.id,
           ...doc.data()
         }));
         
@@ -32,34 +30,55 @@ function Projects() {
       } catch (error) {
         console.error("Projeler çekilirken hata oluştu: ", error);
       } finally {
-        setLoading(false); // Yükleme bitti
+        setLoading(false);
       }
     };
 
     fetchProjects();
   }, []);
 
+  // ── Sıralama Fonksiyonu ──
+  const toggleSortOrder = () => {
+    setSortOrder(prevOrder => prevOrder === 'desc' ? 'asc' : 'desc');
+  };
+
+  // ── Gösterilecek Projeleri Sıraya Göre Ayarla ──
+  // Firebase'den zaten 'desc' olarak çekiyoruz. 
+  // Eğer kullanıcı 'asc' isterse, diziyi ters çevirip (reverse) gösteriyoruz.
+  const displayedProjects = sortOrder === 'desc' ? projects : [...projects].reverse();
+
   return (
     <div className="projects">
-      {/* ── Geri Dön Butonu ── */}
-      <Link to="/" className="projects__back btn-modern btn-back">
-          <svg 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
+      
+      {/* ── Üst Bar: Geri Dön Butonu ve Sıralama Butonu Yan Yana ── */}
+      <div className="projects__header-bar" style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: '2rem' 
+      }}>
+        
+        <Link to="/" className="projects__back btn-modern btn-back" style={{ margin: 0 }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
           <span>Back to Home</span>
         </Link>
 
+        {/* ── Sıralama Butonu ── */}
+        <button onClick={toggleSortOrder} className="btn-modern btn-sort" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>Sort: {sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ transform: sortOrder === 'asc' ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }}>
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <polyline points="19 12 12 19 5 12"></polyline>
+          </svg>
+        </button>
+        
+      </div>
+
       <h1 className="projects__heading">All Drawings</h1>
       
-      {/* Kaç eser olduğunu dinamik gösteriyoruz */}
       <p className="projects__subheading">
         {loading ? "Yükleniyor..." : `${projects.length} works – click to view details`}
       </p>
@@ -67,19 +86,16 @@ function Projects() {
       {/* ── Projeler Grid ── */}
       <div className="projects__grid">
         {loading ? (
-          // Veriler gelirken şık bir yükleniyor yazısı gösterelim
           <p style={{ color: 'var(--text-end)', textAlign: 'center', width: '100%', fontSize: '1.5rem' }}>Eserler yükleniyor...</p>
         ) : (
-          projects.map(project => (
+          displayedProjects.map(project => (
             
             <ScrollReveal key={project.id}>
-              
               <Link 
                 to={`/projects/${project.id}`} 
                 state={{ background: location }} 
                 className="projects__cell"
               >
-                {/* Çoklu resim dizisindeki ilk görseli kapak resmi yapıyoruz */}
                 <img 
                   src={project.imageUrls?.[0] || project.imageUrl || ''} 
                   alt={project.title} 
@@ -93,7 +109,6 @@ function Projects() {
                   <span className="projects__cell-link">View Details →</span>
                 </div>
               </Link>
-              
             </ScrollReveal>
 
           ))

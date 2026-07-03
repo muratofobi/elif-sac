@@ -94,21 +94,52 @@ input[type="file"].admin__input {
   opacity: 0.8;
 }
 
-/* Mevcut Projeler Listesi */
+/* ── 1. ADIM: MEVCUT PROJELER LİSTESİ (KAYDIRILABİLİR KUTU) ── */
 .admin__list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  
+  /* Arşivin aşağı uzamasını engelliyoruz */
+  max-height: 600px; 
+  overflow-y: auto; /* İçerik taşarsa dikey scroll çıkar */
+  padding-right: 15px; /* Scrollbar ile içerik birbirine yapışmasın */
 }
 
+/* Şık Özel Scrollbar Tasarımı (Webkit tarayıcılar için) */
+.admin__list::-webkit-scrollbar {
+  width: 6px;
+}
+.admin__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin__list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2); 
+  border-radius: 10px;
+}
+.admin__list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-red-dark);
+}
+
+/* Liste Öğesi (Artık Sürüklenebilir) */
 .admin__list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
   border: 1px solid var(--color-border);
-  background-color: transparent;
-  transition: border-color 0.3s ease;
+  background-color: var(--color-surface); /* Sürüklenirken daha belirgin olması için dolgu ekledik */
+  transition: border-color 0.3s ease, transform 0.2s;
+  
+  /* Sürükle Bırak İmleci */
+  cursor: grab; 
+}
+
+.admin__list-item:active {
+  cursor: grabbing; /* Tutulduğunda imleç kapansın */
+  transform: scale(0.98); /* Sürüklenirken hafifçe küçülsün */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Tutulduğunda gölge versin */
+  z-index: 10;
 }
 
 .admin__list-item:hover {
@@ -118,6 +149,7 @@ input[type="file"].admin__input {
 .admin__list-item-title {
   font-size: 1rem;
   letter-spacing: 0.05em;
+  pointer-events: none; /* Metni seçmeyi engeller, sürüklemeyi kolaylaştırır */
 }
 
 .admin__empty {
@@ -211,7 +243,7 @@ input[type="file"].admin__input {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  pointer-events: none; /* Sürükleme esnasında imajın takılmasını önler */
+  pointer-events: none;
 }
 
 /* Sağ Üstteki Silme (X) Butonu */
@@ -238,7 +270,7 @@ input[type="file"].admin__input {
   transform: scale(1.1);
 }
 
-/* Sol Alttaki Sıra Numarası (Kullanıcıya sıralamayı belli eder) */
+/* Sol Alttaki Sıra Numarası */
 .admin__gallery-number {
   position: absolute;
   bottom: 5px;
@@ -259,14 +291,13 @@ input[type="file"].admin__input {
   left: 0;
   width: 100%;
   height: 100%;
-  /* Sitenin karanlık temasına uygun, arka planı bulanıklaştıran siyah perde */
   background: rgba(0, 0, 0, 0.75); 
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Her şeyin üstünde olsun */
+  z-index: 9999;
 }
 
 .admin__modal {

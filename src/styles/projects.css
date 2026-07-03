@@ -27,33 +27,39 @@
   margin-bottom: 5rem;
 }
 
-/* Back link - GÜNCELLENDİ */
-.projects__back {
-  display: inline-flex; /* inline-block yerine inline-flex daha dengeli durur */
+/* ── Geri Dön ve Sıralama Butonları (İkiz Tasarım) ── */
+.projects__back,
+.btn-sort {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
   font-size: 1.4rem;
   color: rgb(53, 53, 53) !important;
+  background-color: transparent !important; /* Butonun arka planını şeffaf yapıyoruz */
   border: 1px solid rgb(53, 53, 53) !important;
   letter-spacing: 0.15em;
-  margin-bottom: 4rem;
-  
-  /* Zıplamayı engelleyen sihirli dokunuşlar: */
   position: relative; 
   top: 0; 
   transition: all 0.3s ease;
-  vertical-align: top; /* Hizalamayı sabitleyelim */
+  vertical-align: top;
+  cursor: pointer;
+  text-decoration: none;
+  
+  /* Butonların iç boşluklarını ve oval yapısını milimetrik eşitleyelim */
+  padding: 1rem 2.5rem;
+  border-radius: 50px; 
 }
 
-.projects__back:hover {
+/* Hover (Üzerine gelince) İkisi de Kırmızı Çizgili ve Beyaz Yazılı Olacak */
+.projects__back:hover,
+.btn-sort:hover {
   color: #fff !important;
-  border-color: var(--color-red) !important; /* Border'ı da belirginleştirdik */
-  
-  /* translateY yerine top kullanıyoruz, böylece grid yerinden oynamıyor */
+  border-color: var(--color-red) !important; 
   top: -4px; 
 }
 
+/* Geri Dön butonundaki eski animasyonu koruyalım */
 .projects__back:hover::before {
   transform: scaleX(1);
   transform-origin: right !important;

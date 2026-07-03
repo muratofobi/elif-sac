@@ -13,8 +13,8 @@
   --font-display:    'Times New Roman', Times, serif;
 
   /* Kaydırma ile karıştırılacak renkler */
-  --bg-start: rgb(250, 232, 228);  
-  --bg-end:   rgb(16, 4, 1);     
+  --bg-start: rgb(250, 215, 210);  
+  --bg-end:   rgb(14, 3, 3);     
   
   --text-start: rgb(11, 6, 4);   
   --text-end:   rgb(247, 208, 142); 

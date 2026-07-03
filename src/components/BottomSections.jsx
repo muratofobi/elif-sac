@@ -41,24 +41,12 @@ function BottomSections() {
   return (
     <footer className="bottom">
 
-      {/* VİZYONUMUZ BÖLÜMÜ - Orijinal hali korundu */}
-      <section id="vizyonumuz" className="bottom__section">
-        <h2 className="bottom__title">Our Vision</h2>
-        <p className="bottom__text">
-          Art as a lens through which the unseen becomes visible.
-          Every line drawn is a question asked — a boundary pushed
-          between the familiar and the strange.
-        </p>
-      </section>
-
       {/* HAKKIMIZDA BÖLÜMÜ - Orijinal hali korundu */}
       <section id="hakkimizda" className="bottom__section">
-        <h2 className="bottom__title">About</h2>
+        <h2 className="bottom__title">ABOUT ME</h2>
         <p className="bottom__text">
-          Mensrea is a self-taught illustrator and visual artist.
-          Working primarily with ink and pencil, the work explores
-          mythology, architecture, and the quietly surreal.
-          Based everywhere, rooted nowhere.
+I'M ELİF; I GRADUATED FROM THE INTERIOR ARCHITECTURE DEPARTMENT IN 2023.
+MY DESIGNS ARE INSPIRED BY MY PASSION FOR CINEMA AND THE DIGITAL WORLD.
         </p>
       </section>
 

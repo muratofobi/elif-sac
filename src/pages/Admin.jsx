@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { db, storage } from '../firebase'; 
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+// ── EKLENDİ: writeBatch (Toplu Firebase Güncellemesi İçin) ──
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, doc, deleteDoc, updateDoc, writeBatch } from 'firebase/firestore';
 
 import '../styles/admin.css'; 
 
@@ -20,8 +21,13 @@ function Admin() {
   // ── ÖZEL SİLME PENCERESİ İÇİN STATE ──
   const [projectToDelete, setProjectToDelete] = useState(null);
 
+  // ── GALERİ SÜRÜKLE/BIRAK REFERANSLARI ──
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+
+  // ── EKLENDİ: ARŞİV LİSTESİ SÜRÜKLE/BIRAK REFERANSLARI ──
+  const projectDragItem = useRef(null);
+  const projectDragOverItem = useRef(null);
 
   const fetchProjects = async () => {
     try {
@@ -65,6 +71,7 @@ function Admin() {
     }
   };
 
+  // ── GALERİ GÖRSELLERİ SIRALAMA İŞLEMİ ──
   const handleSort = () => {
     let _gallery = [...gallery];
     const draggedItemContent = _gallery.splice(dragItem.current, 1)[0];
@@ -72,6 +79,38 @@ function Admin() {
     dragItem.current = null;
     dragOverItem.current = null;
     setGallery(_gallery);
+  };
+
+  // ── EKLENDİ: ARŞİV PROJELERİ SIRALAMA VE FİREBASE GÜNCELLEME İŞLEMİ ──
+  const handleProjectSort = async () => {
+    // 1. Yerel state'i güncelle (Arayüz anında değişsin diye)
+    let _projects = [...projects];
+    const draggedItemContent = _projects.splice(projectDragItem.current, 1)[0];
+    _projects.splice(projectDragOverItem.current, 0, draggedItemContent);
+    
+    projectDragItem.current = null;
+    projectDragOverItem.current = null;
+    
+    setProjects(_projects);
+
+    // 2. Firebase'i yeni sıraya göre topluca güncelle
+    try {
+      const batch = writeBatch(db);
+      const now = Date.now();
+
+      _projects.forEach((proj, index) => {
+        const projectRef = doc(db, 'projects', proj.id);
+        // En üstteki index(0) en yeni zamanı alacak, aşağı indikçe 10 saniye eski olacak.
+        // Bu sayede "All Projects" tarafında otomatik olarak istenen sırayla dizilecekler.
+        batch.update(projectRef, { createdAt: now - (index * 10000) });
+      });
+
+      await batch.commit();
+      console.log("Arşiv sıralaması başarıyla Firebase'e kaydedildi!");
+    } catch (error) {
+      console.error("Sıralama kaydedilirken hata:", error);
+      alert("Sıralama güncellenemedi.");
+    }
   };
 
   // ── GERÇEK SİLME İŞLEMİ (Özel pencereden EVET denirse çalışır) ──
@@ -160,11 +199,12 @@ function Admin() {
           imageUrls: finalUrls 
         });
       } else {
+        // Yeni eser eklenirken, "En Üste" geçmesi için en güncel zaman damgasını kullanırız
         await addDoc(collection(db, 'projects'), {
           title: title,
           description: description,
           imageUrls: finalUrls, 
-          createdAt: serverTimestamp() 
+          createdAt: Date.now() // serverTimestamp yerine Date.now() kullandık ki milisaniye hassasiyetinde sıralama ile uyumlu olsun
         });
       }
 
@@ -212,7 +252,7 @@ function Admin() {
 
             <div className="admin__field">
               <label className="admin__label">Açıklama / Teknik</label>
-              <textarea className="admin__textarea" value={description} onChange={(e) => setDescription(e.target.value)} required />
+              <textarea className="admin__textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
 
             <div className="admin__field">
@@ -253,13 +293,21 @@ function Admin() {
             ) : projects.length === 0 ? (
               <p className="admin__empty">Henüz hiç eser yüklenmemiş.</p>
             ) : (
-              projects.map(project => (
-                <div key={project.id} className="admin__list-item">
+              projects.map((project, index) => (
+                <div 
+                  key={project.id} 
+                  className="admin__list-item"
+                  /* ── EKLENDİ: SÜRÜKLE/BIRAK EVENTLERİ ── */
+                  draggable
+                  onDragStart={() => (projectDragItem.current = index)}
+                  onDragEnter={() => (projectDragOverItem.current = index)}
+                  onDragEnd={handleProjectSort}
+                  onDragOver={(e) => e.preventDefault()}
+                >
                   <span className="admin__list-item-title">{project.title}</span>
                   
                   <div className="admin__list-actions">
                     <button className="admin__action-btn edit" onClick={() => handleEditClick(project)}>DÜZENLE</button>
-                    {/* Artık window.confirm yerine kendi popup'ımızı tetikliyoruz */}
                     <button className="admin__action-btn delete" onClick={() => setProjectToDelete(project)}>SİL</button>
                   </div>
                 </div>
